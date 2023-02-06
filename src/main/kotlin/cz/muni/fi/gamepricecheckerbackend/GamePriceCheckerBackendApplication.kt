@@ -1,6 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend
 
-import cz.muni.fi.gamepricecheckerbackend.services.UserService
+import cz.muni.fi.gamepricecheckerbackend.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

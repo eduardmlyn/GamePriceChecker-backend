@@ -1,4 +1,4 @@
-package cz.muni.fi.gamepricecheckerbackend.models
+package cz.muni.fi.gamepricecheckerbackend.model
 
 /**
  *

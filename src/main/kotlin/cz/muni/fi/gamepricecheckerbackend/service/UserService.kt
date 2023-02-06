@@ -1,7 +1,7 @@
-package cz.muni.fi.gamepricecheckerbackend.services
+package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.models.User
-import cz.muni.fi.gamepricecheckerbackend.repositories.UserRepository
+import cz.muni.fi.gamepricecheckerbackend.model.User
+import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import org.springframework.stereotype.Service
 
 /**
@@ -23,5 +23,11 @@ class UserService(private val userRepository: UserRepository) {
 
     fun deleteUser(username: String): User? {
         return userRepository.deleteUserByUserName(username)
+    }
+
+    fun editUsername(username: String): User? {
+        // TODO change to get user and save() + add username check
+        val user = findByUsername(username) ?: return null
+        return userRepository.changeUsername(username, user.id)
     }
 }

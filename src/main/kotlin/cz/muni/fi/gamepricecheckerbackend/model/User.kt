@@ -1,4 +1,4 @@
-package cz.muni.fi.gamepricecheckerbackend.models
+package cz.muni.fi.gamepricecheckerbackend.model
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -20,6 +20,7 @@ data class User(
     val id: String,
     @Column(name = "userName", unique = true)
     val userName: String,
+    // TODO implement password encoding
     @Column
     val password: String
 ) {
