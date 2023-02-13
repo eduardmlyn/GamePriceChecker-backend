@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query
  *
  * @author Eduard Stefan Mlynarik
  */
-interface UserRepository: JpaRepository<User, Long> {
+interface UserRepository: JpaRepository<User, String> {
     fun findUserByUserName(username: String): User?
     fun deleteUserByUserName(username: String): User?
     fun existsUserByUserName(username: String): Boolean

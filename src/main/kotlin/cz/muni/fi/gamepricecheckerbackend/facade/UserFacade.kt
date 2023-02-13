@@ -32,7 +32,7 @@ class UserFacadeImpl(val userService: UserService): UserFacade {
     }
 
     override fun editUsername(username: String): User? {
-        TODO("Not yet implemented")
+        // jwt invalidation + refresh(frontend?)
+        return userService.editUsername(username)
     }
-
 }

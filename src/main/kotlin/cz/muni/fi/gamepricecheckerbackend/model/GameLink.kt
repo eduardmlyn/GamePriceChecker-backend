@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.model
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -19,10 +20,15 @@ data class GameLink(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: String,
+    @Column
     val link: String,
+    @Column
+    val price: Double,
+    @Column
+    val seller: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
     val game: Game
 ) {
-    constructor(): this("", "", Game())
+    constructor(): this("", "", 0.0, "", Game())
 }
