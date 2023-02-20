@@ -19,7 +19,6 @@ import kotlin.jvm.Throws
 @Component
 class JwtFilter(val jwtService: JwtService, val userDetailsService: UserDetailsService): OncePerRequestFilter() {
 
-    // TODO @NonNull needed?
     // add throws servletExc/ioexc
     @Throws(ServletException::class)
     override fun doFilterInternal(

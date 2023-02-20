@@ -1,7 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.controller
 
-import cz.muni.fi.gamepricecheckerbackend.model.AuthenticationRequest
-import cz.muni.fi.gamepricecheckerbackend.model.AuthenticationResponse
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.UserRequest
 import cz.muni.fi.gamepricecheckerbackend.service.AuthenticationService
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(value = ["/auth"])
 class AuthenticationController(val authenticationService: AuthenticationService) {
 
-    @Operation()
+    @Operation() // TODO swagger documentation
     @PostMapping("/sign-up")
     fun register(
         @RequestBody request: UserRequest

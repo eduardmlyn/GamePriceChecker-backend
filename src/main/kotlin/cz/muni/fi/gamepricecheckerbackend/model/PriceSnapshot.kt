@@ -16,7 +16,7 @@ import java.sql.Date
  * @author Eduard Stefan Mlynarik
  */
 @Entity
-@Table(name = "PriceSnapshot")
+@Table(name = "price_snapshot")
 data class PriceSnapshot(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

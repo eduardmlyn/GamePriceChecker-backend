@@ -1,15 +1,17 @@
 package cz.muni.fi.gamepricecheckerbackend.controller
 
-import cz.muni.fi.gamepricecheckerbackend.client.SteamClient
+import cz.muni.fi.gamepricecheckerbackend.client.SteamGameDetailClient
+import cz.muni.fi.gamepricecheckerbackend.client.SteamGameListClient
 import cz.muni.fi.gamepricecheckerbackend.facade.GameFacade
 import cz.muni.fi.gamepricecheckerbackend.model.Game
-import cz.muni.fi.gamepricecheckerbackend.model.SteamAllGamesResponse
+import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamAllGamesResponse
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Game", description = "Provides Api for Game")
 @RestController
 @RequestMapping(value = ["/game"])
-class GameController(val gameFacade: GameFacade, val steamClient: SteamClient) {
+class GameController(val gameFacade: GameFacade, val steamGameListClient: SteamGameListClient, val steamGameDetailClient: SteamGameDetailClient) {
 
     // is this endpoint needed if get all games sends all game data?
     @Operation(summary = "Get game details", description = "Returns details of game.")
@@ -68,6 +70,13 @@ class GameController(val gameFacade: GameFacade, val steamClient: SteamClient) {
 
     @GetMapping("/test/all")
     fun getAllSteamGames(): SteamAllGamesResponse {
-        return steamClient.getAllGames()
+        return steamGameListClient.getAllGames()
+    }
+
+    @GetMapping("/test/detail/{appId}")
+    fun getSteamGameDetail(
+        @Parameter(description = "Application id", required = true) @PathVariable appId: Int
+    ): Any {
+        return steamGameDetailClient.getGameDetails(appId, "CZ")
     }
 }

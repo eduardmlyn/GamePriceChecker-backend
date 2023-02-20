@@ -15,7 +15,7 @@ import jakarta.persistence.Table
  * @author Eduard Stefan Mlynarik
  */
 @Entity
-@Table(name = "gameLinks")
+@Table(name = "game_links")
 data class GameLink(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

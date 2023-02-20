@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 
@@ -22,10 +23,18 @@ data class Game(
     val id: String,
     @Column
     val name: String,
+    @Column
+    val description: String,
+    @Column
+    val imageUrl: String,
+    @Column
+    val releaseDate: String,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val externalLinks: Set<GameLink>,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    val history: List<PriceSnapshot>
+    val history: List<PriceSnapshot>,
+    @ManyToMany(mappedBy = "favorites")
+    val users: List<User>
 ) {
-    constructor(): this("", "", emptySet(), emptyList())
+    constructor(): this("", "", "", "", "", emptySet(), emptyList(), emptyList())
 }

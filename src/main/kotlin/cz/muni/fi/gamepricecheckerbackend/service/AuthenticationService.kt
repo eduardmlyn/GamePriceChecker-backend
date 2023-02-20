@@ -1,7 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.model.AuthenticationRequest
-import cz.muni.fi.gamepricecheckerbackend.model.AuthenticationResponse
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.Role
 import cz.muni.fi.gamepricecheckerbackend.model.User
 import cz.muni.fi.gamepricecheckerbackend.model.UserRequest
