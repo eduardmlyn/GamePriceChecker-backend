@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAlias
  */
 data class Screenshot(
     val id: Int,
-    @JsonAlias("path_thumnbail", "pathThumbnail")
+    @JsonAlias("path_thumbnail", "pathThumbnail")
     val pathThumbnail: String,
     @JsonAlias("path_full", "pathFull")
     val pathFull: String
