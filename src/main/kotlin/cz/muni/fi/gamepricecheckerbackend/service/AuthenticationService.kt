@@ -1,14 +1,14 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
-import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.Role
 import cz.muni.fi.gamepricecheckerbackend.model.User
-import cz.muni.fi.gamepricecheckerbackend.model.UserRequest
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -24,9 +24,10 @@ class AuthenticationService(
     val authenticationManager: AuthenticationManager
 ) {
 
-    fun register(userRequest: UserRequest): AuthenticationResponse {
+    // TODO check if user exists with username
+    fun register(userRequest: AuthenticationRequest): AuthenticationResponse {
         val user = User(
-            userName = userRequest.userName,
+            userName = userRequest.username,
             password = passwordEncoder.encode(userRequest.password),
             role = Role.USER
         )

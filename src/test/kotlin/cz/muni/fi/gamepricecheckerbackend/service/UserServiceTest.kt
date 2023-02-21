@@ -4,6 +4,7 @@ import cz.muni.fi.gamepricecheckerbackend.GamePriceCheckerBackendApplication
 import cz.muni.fi.gamepricecheckerbackend.model.Role
 import cz.muni.fi.gamepricecheckerbackend.model.User
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
+import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,7 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest(classes = [GamePriceCheckerBackendApplication::class])
 internal class UserServiceTest {
     private val userRepository: UserRepository = mockk()
-    private val userService: UserService = UserService(userRepository)
+    private val jwtService: JwtService = mockk()
+    private val userService: UserService = UserService(userRepository, jwtService)
     private val user: User = mockk()
 
     @Test
@@ -47,17 +49,51 @@ internal class UserServiceTest {
 
     @Test
     fun `createUser user non-existent`() {
-        every { userRepository.save(User("testUser", "testUser", Role.USER)) } returns user
         every { userRepository.existsUserByUserName("testUser")} returns false
+        every { userRepository.save(User("testUser", "testUser", Role.USER)) } returns user
         val result = userService.createUser("testUser", "testUser")
+        verify { userRepository.existsUserByUserName("testUser") }
+        verify { userRepository.save(User("testUser", "testUser", Role.USER)) }
         Assertions.assertEquals(user, result)
     }
 
     @Test
-    fun deleteUser() {
+    fun `deleteUser user exists`() {
+        every { userRepository.deleteUserByUserName("testUser") } returns user
+        val result = userService.deleteUser("testUser")
+        verify { userRepository.deleteUserByUserName("testUser") }
+        Assertions.assertEquals(user, result)
     }
 
     @Test
-    fun editUsername() {
+    fun `deleteUser user non-existent`() {
+        every { userRepository.deleteUserByUserName("testUser") } returns null
+        val result = userService.deleteUser("testUser")
+        verify { userRepository.deleteUserByUserName("testUser") }
+        Assertions.assertNull(result)
+    }
+
+    @Test
+    fun `editUsername user exists`() {
+        every { jwtService.getUserName() } returns "testUser"
+        every { userRepository.findUserByUserName("testUser") } returns user
+        every { user.id } returns ""
+        every { userRepository.changeUsername("newTestUser", "") } returns user // maybe mock other user?
+        val result = userService.editUsername("newTestUser")
+        verify { jwtService.getUserName() }
+        verify { userRepository.findUserByUserName("testUser") }
+        verify { user.id }
+        verify { userRepository.changeUsername("newTestUser", "") }
+        Assertions.assertEquals(user, result)
+    }
+
+    @Test
+    fun `editUsername user non-existent`() {
+        every { jwtService.getUserName() } returns "testUser"
+        every { userRepository.findUserByUserName("testUser") } returns null
+        val result = userService.editUsername( "newTestUser")
+        verify { jwtService.getUserName() }
+        verify { userRepository.findUserByUserName("testUser") }
+        Assertions.assertNull(result)
     }
 }

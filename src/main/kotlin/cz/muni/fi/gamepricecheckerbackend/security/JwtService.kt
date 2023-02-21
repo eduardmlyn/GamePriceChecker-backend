@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.security.Key
@@ -70,5 +71,10 @@ class JwtService {
     private fun getSignInKey(): Key {
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
+    }
+
+    fun getUserName(): String {
+        val authenticationToken = SecurityContextHolder.getContext().authentication
+        return authenticationToken.name
     }
 }

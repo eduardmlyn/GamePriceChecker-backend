@@ -39,6 +39,8 @@ class SecurityConfig(
             .permitAll()
             .requestMatchers("/game/test/detail/*")
             .permitAll()
+            .anyRequest()
+            .authenticated()
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -3,6 +3,7 @@ package cz.muni.fi.gamepricecheckerbackend.service
 import cz.muni.fi.gamepricecheckerbackend.model.Role
 import cz.muni.fi.gamepricecheckerbackend.model.User
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
+import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.stereotype.Service
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service
  * @author Eduard Stefan Mlynarik
  */
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(private val userRepository: UserRepository, private val jwtService: JwtService) {
     fun findByUsername(username: String): User? {
         return userRepository.findUserByUserName(username)
     }
@@ -27,8 +28,8 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     fun editUsername(username: String): User? {
-        // TODO change to get user and save() + add username check
-        val user = findByUsername(username) ?: return null
+        val currentUserName = jwtService.getUserName()
+        val user = findByUsername(currentUserName) ?: return null
         return userRepository.changeUsername(username, user.id)
     }
 }

@@ -32,7 +32,7 @@ class UserFacadeImpl(val userService: UserService): UserFacade {
     }
 
     override fun editUsername(username: String): User? {
-        // jwt invalidation + refresh(frontend?)
+        // TODO jwt invalidation + refresh(frontend?)
         return userService.editUsername(username)
     }
 }

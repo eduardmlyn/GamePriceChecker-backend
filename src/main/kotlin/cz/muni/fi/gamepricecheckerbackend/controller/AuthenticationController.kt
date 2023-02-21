@@ -23,13 +23,13 @@ class AuthenticationController(val authenticationService: AuthenticationService)
     @Operation() // TODO swagger documentation
     @PostMapping("/sign-up")
     fun register(
-        @RequestBody request: UserRequest
+        @RequestBody request: AuthenticationRequest
     ): ResponseEntity<ResponseWrapper<AuthenticationResponse>> {
         return ResponseEntity.ok(ResponseWrapper("Successfully signed up", authenticationService.register(request)))
     }
 
     @Operation
-    @PostMapping("/sing-in")
+    @PostMapping("/sign-in")
     fun authenticate(
         @RequestBody request: AuthenticationRequest
     ): ResponseEntity<ResponseWrapper<AuthenticationResponse?>> {
