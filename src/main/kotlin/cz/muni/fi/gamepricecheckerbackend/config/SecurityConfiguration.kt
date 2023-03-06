@@ -39,6 +39,8 @@ class SecurityConfig(
             .permitAll()
             .requestMatchers("/game/test/detail/*")
             .permitAll()
+            .requestMatchers("/game/scrape/ea-games")
+            .permitAll()
             .anyRequest()
             .authenticated()
             .and()

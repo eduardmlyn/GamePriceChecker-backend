@@ -25,7 +25,7 @@ class AuthenticationController(val authenticationService: AuthenticationService)
     fun register(
         @RequestBody request: AuthenticationRequest
     ): ResponseEntity<ResponseWrapper<AuthenticationResponse>> {
-        return ResponseEntity.ok(ResponseWrapper("Successfully signed up", authenticationService.register(request)))
+        return ResponseEntity.status(201).body(ResponseWrapper("Successfully signed up", authenticationService.register(request)))
     }
 
     @Operation

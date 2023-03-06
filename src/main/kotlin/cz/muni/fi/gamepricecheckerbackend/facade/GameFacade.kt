@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
  * @author Eduard Stefan Mlynarik
  */
 interface GameFacade {
-    fun getGameByName(name: String): Game?
+    fun getGameById(id: String): Game?
     fun getGames(page: Int): List<Game>
     fun createGame(name: String): Game
     fun addExternalLink(extLink: GameLink): Boolean
@@ -18,17 +18,17 @@ interface GameFacade {
 
 @Component
 class GameFacadeImpl(val gameService: GameService): GameFacade {
-    override fun getGameByName(name: String): Game? {
-        TODO("Not yet implemented")
+    override fun getGameById(id: String): Game? {
+        return gameService.getGame(id)
     }
 
     override fun getGames(page: Int): List<Game> {
-        // TODO
         return gameService.getGames(page)
     }
 
+    // only used internally?
     override fun createGame(name: String): Game {
-        TODO("Not yet implemented")
+        return gameService.createGame(name)
     }
 
     override fun addExternalLink(extLink: GameLink): Boolean {

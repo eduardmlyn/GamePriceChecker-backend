@@ -2,6 +2,7 @@
 TODOS:
 * change feignClient to requestline?
 * remove facades?
+* add try catch to scraper findelement
 
 Possible extensions:
 * add email to user for notifications
@@ -22,3 +23,13 @@ Change list 0.2.21b:
 * added authentication to any other requests than listed
 * changed method to use the jwt username method
 * added more tests
+
+Change list 0.3.6
+* added webdrivermanager
+* added ea games site
+* changed response status for registering
+* added scrape endpoint for testing scraping ea site
+* implemented/changed methods in game facade/repository/service
+* updated gameServiceTest test class
+* added dependencies for webdriver setup and selenium for scraping
+* created scraper class WIP -> will be extracted to interface and have specific implementations for specific sites

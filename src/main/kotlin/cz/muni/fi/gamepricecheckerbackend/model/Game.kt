@@ -24,11 +24,11 @@ data class Game(
     @Column
     val name: String,
     @Column
-    val description: String,
+    val description: String?,
     @Column
-    val imageUrl: String,
+    val imageUrl: String?,
     @Column
-    val releaseDate: String,
+    val releaseDate: String?,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     val externalLinks: Set<GameLink>,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
@@ -37,4 +37,6 @@ data class Game(
     val users: List<User>
 ) {
     constructor(): this("", "", "", "", "", emptySet(), emptyList(), emptyList())
+    constructor(name: String): this("", name, null, null, null, emptySet(), emptyList(), emptyList())
+    constructor(name: String, description: String, imageUrl: String, releaseDate: String): this("", name, description, imageUrl, releaseDate, emptySet(), emptyList(), emptyList())
 }

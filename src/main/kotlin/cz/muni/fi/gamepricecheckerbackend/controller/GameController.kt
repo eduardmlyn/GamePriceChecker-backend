@@ -5,10 +5,12 @@ import cz.muni.fi.gamepricecheckerbackend.client.SteamGameListClient
 import cz.muni.fi.gamepricecheckerbackend.facade.GameFacade
 import cz.muni.fi.gamepricecheckerbackend.model.Game
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamAllGamesResponse
+import cz.muni.fi.gamepricecheckerbackend.util.Scrapper
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.openqa.selenium.chrome.ChromeDriver
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,15 +27,21 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Game", description = "Provides Api for Game")
 @RestController
 @RequestMapping(value = ["/game"])
-class GameController(val gameFacade: GameFacade, val steamGameListClient: SteamGameListClient, val steamGameDetailClient: SteamGameDetailClient) {
+class GameController(
+    val gameFacade: GameFacade,
+    val steamGameListClient: SteamGameListClient,
+    val steamGameDetailClient: SteamGameDetailClient,
+    val scrapper: Scrapper,
+    val webDriver: ChromeDriver
+) {
 
     // is this endpoint needed if get all games sends all game data?
     @Operation(summary = "Get game details", description = "Returns details of game.")
     @GetMapping
     fun getGame(
-        @Parameter(description = "Game name", required = true) @RequestParam gameName: String
+        @Parameter(description = "Game name", required = true) @RequestParam gameId: String
     ): ResponseEntity<ResponseWrapper<Game?>> {
-        val game = gameFacade.getGameByName(gameName)
+        val game = gameFacade.getGameById(gameId)
             ?: return ResponseEntity.status(404).body(ResponseWrapper("Game with corresponding name not found", null))
         return ResponseEntity.ok(ResponseWrapper("Successfully found game by its name", game))
     }
@@ -59,7 +67,7 @@ class GameController(val gameFacade: GameFacade, val steamGameListClient: SteamG
     @PostMapping("/add")
     fun addGame() {
         TODO()
-        // implement authorization, allow only admin to add games
+        // implement authorization, allow only admin to add games, remove, only internal creation?
     }
 
     @Operation(summary = "Add link to game", description = "Adds new link to game.")
@@ -78,5 +86,12 @@ class GameController(val gameFacade: GameFacade, val steamGameListClient: SteamG
         @Parameter(description = "Application id", required = true) @PathVariable appId: Int
     ): Any {
         return steamGameDetailClient.getGameDetails(appId, "CZ")
+    }
+
+    @GetMapping("/scrape/ea-games")
+    fun getScrapedEaGames(): Any {
+        val data = scrapper.scrapeEa(webDriver)
+//        webDriver.close()
+        return data
     }
 }

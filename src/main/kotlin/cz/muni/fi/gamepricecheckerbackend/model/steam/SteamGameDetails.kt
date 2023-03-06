@@ -1,8 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.model.steam
 
 import com.fasterxml.jackson.annotation.JsonAlias
-import cz.muni.fi.gamepricecheckerbackend.model.PriceOverview
-import cz.muni.fi.gamepricecheckerbackend.model.Screenshot
 
 /**
  *

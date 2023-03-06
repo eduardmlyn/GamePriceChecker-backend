@@ -17,5 +17,5 @@ interface UserRepository: JpaRepository<User, String> {
     fun existsUserByUserName(username: String): Boolean
     @Modifying
     @Query("UPDATE User u set u.userName = ?1 where u.id = ?2")
-    fun changeUsername(username: String, id: String): User
+    fun changeUsername(username: String, id: String): User?
 }

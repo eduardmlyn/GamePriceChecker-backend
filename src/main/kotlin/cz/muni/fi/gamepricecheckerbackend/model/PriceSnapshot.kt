@@ -28,7 +28,7 @@ data class PriceSnapshot(
     val averagePrice: Int,
     @Column
     val minimumPrice: Int,
-    // TODO find out about Date types
+    // TODO find out about Date types -> Instant maybe?
     @Column
     val date: Date
 ) {

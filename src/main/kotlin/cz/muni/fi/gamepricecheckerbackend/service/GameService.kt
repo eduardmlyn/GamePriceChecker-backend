@@ -18,7 +18,20 @@ class GameService(private val gameRepository: GameRepository) {
         // CAN BE SORTING AS 3rd PARAM
         return gameRepository.findAll(PageRequest.of(page, PAGE_SIZE)).content
     }
-    fun test() {
-        TODO()
+
+    fun getGame(gameId: String): Game? {
+        return gameRepository.findGameById(gameId)
+    }
+
+    fun createGame(name: String): Game { // createGame with just name?
+        return gameRepository.save(Game(name))
+    }
+
+    fun addDescription(gameId: String, description: String): Game? {
+        return gameRepository.changeDescription(gameId, description)
+    }
+
+    fun addImageUrl(gameId: String, imageUrl: String): Game? {
+        return gameRepository.changeImageUrl(gameId, imageUrl)
     }
 }
