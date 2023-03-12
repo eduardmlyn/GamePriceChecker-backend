@@ -34,4 +34,8 @@ class GameService(private val gameRepository: GameRepository) {
     fun addImageUrl(gameId: String, imageUrl: String): Game? {
         return gameRepository.changeImageUrl(gameId, imageUrl)
     }
+
+    fun getPageCount(): Long {
+        return gameRepository.count() / PAGE_SIZE
+    }
 }

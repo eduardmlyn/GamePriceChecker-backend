@@ -2,10 +2,11 @@ package cz.muni.fi.gamepricecheckerbackend.controller
 
 import cz.muni.fi.gamepricecheckerbackend.client.SteamGameDetailClient
 import cz.muni.fi.gamepricecheckerbackend.client.SteamGameListClient
-import cz.muni.fi.gamepricecheckerbackend.facade.GameFacade
 import cz.muni.fi.gamepricecheckerbackend.model.Game
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamAllGamesResponse
-import cz.muni.fi.gamepricecheckerbackend.util.Scrapper
+import cz.muni.fi.gamepricecheckerbackend.service.GameService
+import cz.muni.fi.gamepricecheckerbackend.util.EAScrapper
+import cz.muni.fi.gamepricecheckerbackend.util.HumbleBundleScrapper
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
+ * Controller for getting game information.
  *
  * @author Eduard Stefan Mlynarik
  */
@@ -28,26 +30,26 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/game"])
 class GameController(
-    val gameFacade: GameFacade,
+    val gameService: GameService,
     val steamGameListClient: SteamGameListClient,
     val steamGameDetailClient: SteamGameDetailClient,
-    val scrapper: Scrapper,
+    val EAScrapper: EAScrapper,
+    val humbleBundleScrapper: HumbleBundleScrapper,
     val webDriver: ChromeDriver
 ) {
 
-    // is this endpoint needed if get all games sends all game data?
+    // TODO rework by getting details of price snapshots
     @Operation(summary = "Get game details", description = "Returns details of game.")
     @GetMapping
     fun getGame(
         @Parameter(description = "Game name", required = true) @RequestParam gameId: String
     ): ResponseEntity<ResponseWrapper<Game?>> {
-        val game = gameFacade.getGameById(gameId)
+        val game = gameService.getGame(gameId)
             ?: return ResponseEntity.status(404).body(ResponseWrapper("Game with corresponding name not found", null))
         return ResponseEntity.ok(ResponseWrapper("Successfully found game by its name", game))
     }
 
-    // Change return type to only basic info about game?
-    // TODO implement paging and change description
+    // TODO return only base info - no binded pricesnapshot...
     @Operation(summary = "Get all games", description = "Returns games according to page.")
     @GetMapping("/all")
     fun getAllGames(
@@ -55,14 +57,19 @@ class GameController(
     ): ResponseEntity<ResponseWrapper<List<Game>>> {
         return ResponseEntity.ok(
             ResponseWrapper(
-                message = "Successfully returned page number ${page ?: 1}",
-                gameFacade.getGames(page ?: 1)
+                "Successfully returned page number ${page ?: 1}",
+                gameService.getGames(page ?: 1)
             )
         )
     }
 
-    // ADD ENDPOINT FOR GETTING THE NUMBER OF ALL GAMES/ OR DO GET PAGECOUNT
+    @Operation(summary = "Get page count", description = "Returns number of pages.")
+    @GetMapping("/page-count")
+    fun getPageCount(): ResponseEntity<ResponseWrapper<Long>> {
+        return ResponseEntity.ok(ResponseWrapper("Success", gameService.getPageCount()))
+    }
 
+    // TODO remove
     @Operation(summary = "Adds game", description = "Adds new game, allowed by admin only.")
     @PostMapping("/add")
     fun addGame() {
@@ -70,6 +77,7 @@ class GameController(
         // implement authorization, allow only admin to add games, remove, only internal creation?
     }
 
+    // TODO remove
     @Operation(summary = "Add link to game", description = "Adds new link to game.")
     @PutMapping("/add-link")
     fun addLinkToGame() {
@@ -90,8 +98,11 @@ class GameController(
 
     @GetMapping("/scrape/ea-games")
     fun getScrapedEaGames(): Any {
-        val data = scrapper.scrapeEa(webDriver)
-//        webDriver.close()
-        return data
+        return EAScrapper.scrape(webDriver)
+    }
+
+    @GetMapping("/scrape/humble-bundle")
+    fun getScrapedHumbleBundleGames(): Any {
+        return humbleBundleScrapper.scrape(webDriver)
     }
 }

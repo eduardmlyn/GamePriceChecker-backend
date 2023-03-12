@@ -33,3 +33,13 @@ Change list 0.3.6
 * updated gameServiceTest test class
 * added dependencies for webdriver setup and selenium for scraping
 * created scraper class WIP -> will be extracted to interface and have specific implementations for specific sites
+
+Change list 0.3.12
+* extracted chrome configuration to its own class
+* cleaned up pom.xml
+* added documentation to some classes/methods
+* removed facades, replaced by services
+* extracted ea scrapper, created interface for scraping classes
+* created humble bundle scrapper
+* created repositories for game links and price snapshots
+* changed price snapshot date to Instant

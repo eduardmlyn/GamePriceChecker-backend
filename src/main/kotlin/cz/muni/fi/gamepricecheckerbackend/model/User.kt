@@ -31,7 +31,6 @@ data class User(
     val role: Role,
     @Column(name = "userName", unique = true)
     val userName: String,
-    // TODO implement password encoding
     @Column
     private val password: String,
     @ManyToMany

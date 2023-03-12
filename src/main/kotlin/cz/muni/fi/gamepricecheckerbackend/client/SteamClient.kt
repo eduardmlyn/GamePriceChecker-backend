@@ -7,16 +7,22 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 /**
+ * Steam Feign client for getting all games
+ * they sell on their store.
  *
  * @author Eduard Stefan Mlynarik
  */
-// TODO create feign client to steam api
 @FeignClient(name = "SteamListAPI", url = "\${app.steam-api.game-list.url}")
 interface SteamGameListClient {
     @GetMapping("/ISteamApps/GetAppList/v2")
     fun getAllGames(): SteamAllGamesResponse
 }
 
+/**
+ * Steam Feign client for getting details of a game.
+ *
+ * @author Eduard Stefan Mlynarik
+ */
 @FeignClient(name = "SteamDetailAPI", url = "\${app.steam-api.game-detail.url}")
 interface SteamGameDetailClient {
     @GetMapping("/appdetails")

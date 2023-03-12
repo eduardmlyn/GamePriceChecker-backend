@@ -9,7 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.sql.Date
+import java.time.Instant
 
 /**
  *
@@ -25,12 +25,11 @@ data class PriceSnapshot(
     @JoinColumn(name = "game_id")
     val game: Game,
     @Column
-    val averagePrice: Int,
+    val averagePrice: Double,
     @Column
-    val minimumPrice: Int,
-    // TODO find out about Date types -> Instant maybe?
+    val minimumPrice: Double,
     @Column
-    val date: Date
+    val date: Instant
 ) {
-    constructor(): this("", Game(),0, 0, Date(0))
+    constructor(): this("", Game(),0.0, 0.0, Instant.now())
 }

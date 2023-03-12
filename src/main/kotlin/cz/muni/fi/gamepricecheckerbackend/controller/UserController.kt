@@ -1,8 +1,8 @@
 package cz.muni.fi.gamepricecheckerbackend.controller
 
-import cz.muni.fi.gamepricecheckerbackend.facade.UserFacade
 import cz.muni.fi.gamepricecheckerbackend.model.User
 import cz.muni.fi.gamepricecheckerbackend.model.UserRequest
+import cz.muni.fi.gamepricecheckerbackend.service.UserService
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController
 
 
 /**
+ * Controller for user interaction.
  *
  * @author Eduard Stefan Mlynarik
  */
 @Tag(name = "User", description = "Provides API for User")
 @RestController
 @RequestMapping(value = ["/user"])
-// TODO remove userService and implement userFacade
-class UserController(val userFacade: UserFacade) {
+class UserController(val userService: UserService) {
 
     @Deprecated(message = "Use method from AuthController instead")
     @Operation(summary = "Login user", description = "Attempts to Log in a user.")
@@ -34,22 +34,21 @@ class UserController(val userFacade: UserFacade) {
     fun loginUser(
         @Parameter @RequestBody userRequest: UserRequest
         ): ResponseEntity<ResponseWrapper<User?>> {
-        // TODO add jwt and cookie
         println("Logged in")
         println(userRequest)
-        val user = userFacade.getUserByUsername(userRequest.userName)
+        val user = userService.findByUsername(userRequest.userName)
         if (user == null || userRequest.password != user.password) {
             return ResponseEntity.status(401).body(ResponseWrapper("Bad combination of username/password", data = null))
         }
         return ResponseEntity(HttpStatus.OK)
     }
 
+    @Deprecated(message = "Use method from AuthController instead")
     @Operation(summary = "Logout user", description = "Logs out the user.")
     @PostMapping("/sign-out")
     fun logoutUser(
         @Parameter @RequestBody user: User
     ): ResponseEntity<ResponseWrapper<Any?>> {
-        // TODO cookie + jwt
         println("Logged out")
         return ResponseEntity.ok().body(ResponseWrapper("Success", data = null))
     }
@@ -61,7 +60,7 @@ class UserController(val userFacade: UserFacade) {
     fun createUser(
         @Parameter @RequestBody userRequest: UserRequest,
     ): ResponseEntity<ResponseWrapper<User?>> {
-        val user = userFacade.createUser(userRequest.userName, userRequest.password)
+        val user = userService.createUser(userRequest.userName, userRequest.password)
         if (user != null) {
             return ResponseEntity.ok(ResponseWrapper("Success", data = user))
         }
@@ -74,7 +73,7 @@ class UserController(val userFacade: UserFacade) {
         @Parameter @RequestBody userName: String
     ): ResponseEntity<ResponseWrapper<User?>> {
         // TODO work with cookie/jwt?
-        val user = userFacade.deleteUser(userName)
+        val user = userService.deleteUser(userName)
 
         // TODO add exception check
         return ResponseEntity.ok(ResponseWrapper("Success", data = user))
@@ -85,8 +84,7 @@ class UserController(val userFacade: UserFacade) {
     fun editUserUsername(
         @RequestParam(required = true) username: String
     ): ResponseEntity<ResponseWrapper<User?>> {
-        // TODO change this
-        val user = userFacade.editUsername(username)
+        val user = userService.editUsername(username)
             ?: return ResponseEntity.badRequest().body(ResponseWrapper("User not found/username already in use", data = null))
         return ResponseEntity.ok(ResponseWrapper("Success", data = user))
     }

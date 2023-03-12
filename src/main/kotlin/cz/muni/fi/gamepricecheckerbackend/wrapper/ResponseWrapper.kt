@@ -1,6 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.wrapper
 
 /**
+ * Wrapper class for responses.
  *
  * @author Eduard Stefan Mlynarik
  */

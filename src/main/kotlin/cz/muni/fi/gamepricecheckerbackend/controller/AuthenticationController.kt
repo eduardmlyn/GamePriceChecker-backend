@@ -2,7 +2,6 @@ package cz.muni.fi.gamepricecheckerbackend.controller
 
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
-import cz.muni.fi.gamepricecheckerbackend.model.UserRequest
 import cz.muni.fi.gamepricecheckerbackend.service.AuthenticationService
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 /**
+ * Controller for authenticating user.
  *
  * @author Eduard Stefan Mlynarik
  */
@@ -20,15 +20,21 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(value = ["/auth"])
 class AuthenticationController(val authenticationService: AuthenticationService) {
 
-    @Operation() // TODO swagger documentation
+    @Operation(
+        summary = "Sign up new account",
+        description = "Creates new account if there isn't a user with the given username."
+    )
     @PostMapping("/sign-up")
     fun register(
         @RequestBody request: AuthenticationRequest
-    ): ResponseEntity<ResponseWrapper<AuthenticationResponse>> {
-        return ResponseEntity.status(201).body(ResponseWrapper("Successfully signed up", authenticationService.register(request)))
+    ): ResponseEntity<ResponseWrapper<AuthenticationResponse?>> {
+        val userToken = authenticationService.register(request)
+            ?: return ResponseEntity.badRequest().body(ResponseWrapper("Username already taken.", null))
+        return ResponseEntity.status(201)
+            .body(ResponseWrapper("Successfully signed up", userToken))
     }
 
-    @Operation
+    @Operation(summary = "Register user", description = "Registers user and returns user token.")
     @PostMapping("/sign-in")
     fun authenticate(
         @RequestBody request: AuthenticationRequest
@@ -41,6 +47,7 @@ class AuthenticationController(val authenticationService: AuthenticationService)
         }
     }
 
+    // TODO implement
     @Operation
     @PostMapping("/sign-out")
     fun invalidateSession(

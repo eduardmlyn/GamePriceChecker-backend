@@ -21,7 +21,7 @@ internal class AuthenticationServiceTest {
     val authenticationService: AuthenticationService =
         AuthenticationService(userRepository, passwordEncoder, jwtService, authenticationManager)
 
-    // TODO?
+    // TODO! should be easy ^ this is good way, look userservicetest
     @Test
     fun register() {
     }

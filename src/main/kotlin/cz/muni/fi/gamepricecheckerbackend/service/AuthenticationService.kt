@@ -8,7 +8,6 @@ import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -24,8 +23,10 @@ class AuthenticationService(
     val authenticationManager: AuthenticationManager
 ) {
 
-    // TODO check if user exists with username
-    fun register(userRequest: AuthenticationRequest): AuthenticationResponse {
+    fun register(userRequest: AuthenticationRequest): AuthenticationResponse? {
+        if (userRepository.findUserByUserName(userRequest.username) != null) {
+            return null
+        }
         val user = User(
             userName = userRequest.username,
             password = passwordEncoder.encode(userRequest.password),
