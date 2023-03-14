@@ -1,23 +1,26 @@
-package cz.muni.fi.gamepricecheckerbackend.config
+package cz.muni.fi.gamepricecheckerbackend.util
 
 import io.github.bonigarcia.wdm.WebDriverManager
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
 
 /**
  * Configuration of Chrome Web Driver
  *
  * @author Eduard Stefan Mlynarik
  */
-@Configuration
-class ChromeConfiguration {
-    var webDriver: ChromeDriver? = null
+@Component
+class ChromeDriverFactory {
+    private var webDriver: ChromeDriver? = null
 
-    @Bean
-    fun chromeDriver(): ChromeDriver {
+    fun getChromeDriverInstance(): ChromeDriver {
         return webDriver ?: initWebDriver()
+    }
+
+    fun destroyChromeDriverInstance() {
+        webDriver?.quit()
+        webDriver = null
     }
 
     private fun initWebDriver(): ChromeDriver {
@@ -29,12 +32,12 @@ class ChromeConfiguration {
             Chrome/60.0.3112.50 Safari/537.36""".trimIndent()
         options.addArguments(
             "user-agent=$userAgent",
-//            "--headless",
+//            "--headless=new",
             "--window-size=1920,1080",
             "--disable-extensions",
             "--start-maximized",
             "--disable-gpu",
-            "--ignore-certificate-errors"
+            "--remote-allow-origins=*"
         )
         return ChromeDriver(options)
     }

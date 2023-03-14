@@ -5,14 +5,15 @@ import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.PagingAndSortingRepository
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
 @Transactional
-interface GameRepository: JpaRepository<Game, String> {
-    fun findGameByName(name: String): Game? // not needed?
+interface GameRepository: JpaRepository<Game, String>, PagingAndSortingRepository<Game, String> {
+    fun findGameByName(name: String): Game? // not needed? -> needed for updating info and connecting different sellers to a game?
     fun findGameById(id: String): Game?
     @Modifying
     @Query("UPDATE Game g set g.description = ?2 where g.id = ?1")

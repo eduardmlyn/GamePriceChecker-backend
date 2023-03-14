@@ -5,13 +5,13 @@ import cz.muni.fi.gamepricecheckerbackend.client.SteamGameListClient
 import cz.muni.fi.gamepricecheckerbackend.model.Game
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamAllGamesResponse
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
+import cz.muni.fi.gamepricecheckerbackend.util.ChromeDriverFactory
 import cz.muni.fi.gamepricecheckerbackend.util.EAScrapper
 import cz.muni.fi.gamepricecheckerbackend.util.HumbleBundleScrapper
 import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.openqa.selenium.chrome.ChromeDriver
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -35,7 +35,7 @@ class GameController(
     val steamGameDetailClient: SteamGameDetailClient,
     val EAScrapper: EAScrapper,
     val humbleBundleScrapper: HumbleBundleScrapper,
-    val webDriver: ChromeDriver
+    val chromeDriverFactory: ChromeDriverFactory
 ) {
 
     // TODO rework by getting details of price snapshots
@@ -98,11 +98,17 @@ class GameController(
 
     @GetMapping("/scrape/ea-games")
     fun getScrapedEaGames(): Any {
-        return EAScrapper.scrape(webDriver)
+        val webDriver = chromeDriverFactory.getChromeDriverInstance()
+        val res = EAScrapper.scrape(webDriver)
+        chromeDriverFactory.destroyChromeDriverInstance()
+        return res
     }
 
     @GetMapping("/scrape/humble-bundle")
     fun getScrapedHumbleBundleGames(): Any {
-        return humbleBundleScrapper.scrape(webDriver)
+        val webDriver = chromeDriverFactory.getChromeDriverInstance()
+        val res = humbleBundleScrapper.scrape(webDriver)
+        chromeDriverFactory.destroyChromeDriverInstance()
+        return res
     }
 }

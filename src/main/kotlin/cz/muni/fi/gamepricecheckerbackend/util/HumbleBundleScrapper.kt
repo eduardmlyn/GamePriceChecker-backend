@@ -46,11 +46,14 @@ class HumbleBundleScrapper : Scrapper {
         while (true) {
             val wait = WebDriverWait(driver, Duration.ofSeconds(5))
             wait.until {
-                ExpectedConditions.visibilityOfElementLocated(
-                    By.cssSelector("a[class\$='entity-link js-entity-link']")
+                ExpectedConditions.and(
+                    ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                        By.cssSelector("a[class\$='entity-link js-entity-link']")
+                    ),
+                    ExpectedConditions.numberOfElementsToBe(By.cssSelector("a[class='entity-link js-entity-link']"), 20)
                 )
             }
-            val currentCatalogLinks = driver.findElements(By.cssSelector("a[class\$='entity-link js-entity-link']"))
+            val currentCatalogLinks = driver.findElements(By.cssSelector("a[class='entity-link js-entity-link']"))
             val currentLinks = currentCatalogLinks.map { it.getAttribute("href") }
             println("Printing current links, amount: ${currentLinks.size}")
             println(currentLinks)
@@ -80,8 +83,18 @@ class HumbleBundleScrapper : Scrapper {
         }
         val gameName = driver.findElement(By.className("human_name-view"))
         val gamePrice = driver.findElement(By.className("current-price"))
+        val showMore = driver.findElement(By.cssSelector("div[data-anchor-name='#description-text_anchor'] > a[class='js-read-more read-more-toggle']"))
+        driver.executeScript("arguments[0].click()", showMore)
+//        Thread.sleep(100)
+        val gameDescription =
+            driver.findElement(By.cssSelector("div[data-anchor-name='#description-text_anchor']")) // div[class='js-property-content property-content'] needed?
+        // remove last line from gameDescription that contains "Show less about ${game name}"
+        val gameImage =
+            driver.findElement(By.cssSelector("div[class='property-view large_capsule-view js-admin-edit'] > img"))
         println(gameName.text)
         println(gamePrice.text)
+        println(gameDescription.text)
+        println(gameImage.getAttribute("src"))
     }
 
     fun submitAgeCheck(driver: ChromeDriver) {

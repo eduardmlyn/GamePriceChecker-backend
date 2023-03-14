@@ -43,3 +43,9 @@ Change list 0.3.12
 * created humble bundle scrapper
 * created repositories for game links and price snapshots
 * changed price snapshot date to Instant
+
+Change list 0.3.14
+* refactored chrome configuration to chrome factory
+* added gameLink, priceSnapshot repository methods
+* created cronJob class
+* added scraping of game description to humble bundle scrapper
