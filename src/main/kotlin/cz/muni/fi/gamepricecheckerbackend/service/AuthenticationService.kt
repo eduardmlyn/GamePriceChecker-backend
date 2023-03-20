@@ -1,11 +1,12 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.model.Role
-import cz.muni.fi.gamepricecheckerbackend.model.User
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
+import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
+import jakarta.transaction.Transactional
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service
  * @author Eduard Stefan Mlynarik
  */
 @Service
+@Transactional
 class AuthenticationService(
     val userRepository: UserRepository,
     val passwordEncoder: PasswordEncoder,

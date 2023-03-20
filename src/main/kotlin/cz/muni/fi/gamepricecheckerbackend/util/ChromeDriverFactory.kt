@@ -12,15 +12,13 @@ import org.springframework.stereotype.Component
  */
 @Component
 class ChromeDriverFactory {
-    private var webDriver: ChromeDriver? = null
 
     fun getChromeDriverInstance(): ChromeDriver {
-        return webDriver ?: initWebDriver()
+        return initWebDriver()
     }
 
-    fun destroyChromeDriverInstance() {
-        webDriver?.quit()
-        webDriver = null
+    fun destroyChromeDriverInstance(driver: ChromeDriver) {
+        driver.quit()
     }
 
     private fun initWebDriver(): ChromeDriver {

@@ -1,4 +1,4 @@
-package cz.muni.fi.gamepricecheckerbackend.model
+package cz.muni.fi.gamepricecheckerbackend.model.enums
 
 /**
  *

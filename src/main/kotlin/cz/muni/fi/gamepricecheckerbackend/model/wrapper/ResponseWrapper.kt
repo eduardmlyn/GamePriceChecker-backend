@@ -1,4 +1,4 @@
-package cz.muni.fi.gamepricecheckerbackend.wrapper
+package cz.muni.fi.gamepricecheckerbackend.model.wrapper
 
 /**
  * Wrapper class for responses.

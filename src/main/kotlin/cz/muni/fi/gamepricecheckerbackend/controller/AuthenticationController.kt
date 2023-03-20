@@ -3,7 +3,7 @@ package cz.muni.fi.gamepricecheckerbackend.controller
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.service.AuthenticationService
-import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
+import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

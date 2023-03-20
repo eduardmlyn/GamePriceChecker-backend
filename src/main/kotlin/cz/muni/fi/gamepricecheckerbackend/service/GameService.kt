@@ -1,7 +1,14 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.model.Game
+import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
+import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDetailDTO
+import cz.muni.fi.gamepricecheckerbackend.model.dto.GameSellerDTO
+import cz.muni.fi.gamepricecheckerbackend.model.dto.PriceSnapshotDTO
+import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
+import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
+import cz.muni.fi.gamepricecheckerbackend.repository.PriceSnapshotRepository
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 
@@ -12,19 +19,58 @@ const val PAGE_SIZE = 25
  * @author Eduard Stefan Mlynarik
  */
 @Service
-class GameService(private val gameRepository: GameRepository) {
+@Transactional
+class GameService(
+    private val gameRepository: GameRepository,
+    private val gameSellerRepository: GameSellerRepository,
+    private val priceSnapshotRepository: PriceSnapshotRepository
+) {
 
-    fun getGames(page: Int): List<Game> {
+    fun getGames(page: Int): List<GameDTO> {
         // CAN BE SORTING AS 3rd PARAM
-        return gameRepository.findAll(PageRequest.of(page, PAGE_SIZE)).content
+        val games = gameRepository.findAll(PageRequest.of(page, PAGE_SIZE)).content
+        return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
     }
 
-    fun getGame(gameId: String): Game? {
-        return gameRepository.findGameById(gameId)
+    fun getGameDetailsById(gameId: String): GameDetailDTO? {
+        val game = gameRepository.findGameById(gameId) ?: return null
+        return GameDetailDTO(
+            game.id,
+            game.name,
+            game.description,
+            game.imageUrl,
+            game.releaseDate,
+            getSellerLinksForGame(game.id),
+            getPriceSnapshotsForGame(game.id)
+        )
     }
 
-    fun createGame(name: String): Game { // createGame with just name?
-        return gameRepository.save(Game(name))
+    fun getGameDetailsByName(gameName: String): GameDetailDTO? {
+        val game = gameRepository.findGameByName(gameName) ?: return null
+
+        return GameDetailDTO(
+            game.id,
+            game.name,
+            game.description,
+            game.imageUrl,
+            game.releaseDate,
+            getSellerLinksForGame(game.id),
+            getPriceSnapshotsForGame(game.id)
+        )
+    }
+
+    private fun getSellerLinksForGame(gameId: String): Set<GameSellerDTO> {
+        return gameSellerRepository.findGameSellerByGameId(gameId)
+            .map {
+                GameSellerDTO(it.seller, it.link, it.price)
+            }.toSet()
+    }
+
+    private fun getPriceSnapshotsForGame(gameId: String): List<PriceSnapshotDTO> {
+        return priceSnapshotRepository.findPriceSnapshotsByGameId(gameId)
+            .map {
+                PriceSnapshotDTO(it.averagePrice, it.minimumPrice, it.date)
+            }
     }
 
     fun addDescription(gameId: String, description: String): Game? {

@@ -1,16 +1,13 @@
 package cz.muni.fi.gamepricecheckerbackend.controller
 
-import cz.muni.fi.gamepricecheckerbackend.model.User
-import cz.muni.fi.gamepricecheckerbackend.model.UserRequest
+import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.service.UserService
-import cz.muni.fi.gamepricecheckerbackend.wrapper.ResponseWrapper
+import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -27,46 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/user"])
 class UserController(val userService: UserService) {
-
-    @Deprecated(message = "Use method from AuthController instead")
-    @Operation(summary = "Login user", description = "Attempts to Log in a user.")
-    @PostMapping("/sign-in")
-    fun loginUser(
-        @Parameter @RequestBody userRequest: UserRequest
-        ): ResponseEntity<ResponseWrapper<User?>> {
-        println("Logged in")
-        println(userRequest)
-        val user = userService.findByUsername(userRequest.userName)
-        if (user == null || userRequest.password != user.password) {
-            return ResponseEntity.status(401).body(ResponseWrapper("Bad combination of username/password", data = null))
-        }
-        return ResponseEntity(HttpStatus.OK)
-    }
-
-    @Deprecated(message = "Use method from AuthController instead")
-    @Operation(summary = "Logout user", description = "Logs out the user.")
-    @PostMapping("/sign-out")
-    fun logoutUser(
-        @Parameter @RequestBody user: User
-    ): ResponseEntity<ResponseWrapper<Any?>> {
-        println("Logged out")
-        return ResponseEntity.ok().body(ResponseWrapper("Success", data = null))
-    }
-
-    // TODO create a response model with message, status, data
-    @Deprecated(message = "Use method from AuthController instead")
-    @Operation(summary = "Create user", description = "Creates a user if username is not already taken.")
-    @PostMapping("/sign-up")
-    fun createUser(
-        @Parameter @RequestBody userRequest: UserRequest,
-    ): ResponseEntity<ResponseWrapper<User?>> {
-        val user = userService.createUser(userRequest.userName, userRequest.password)
-        if (user != null) {
-            return ResponseEntity.ok(ResponseWrapper("Success", data = user))
-        }
-        return ResponseEntity.badRequest().body(ResponseWrapper("Username already in use", data = null))
-    }
-
     @Operation(summary = "Delete user", description = "Deletes user from system.")
     @DeleteMapping("/opt-out")
     fun deleteUser(

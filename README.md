@@ -1,8 +1,8 @@
 
 TODOS:
 * change feignClient to requestline?
-* remove facades?
 * add try catch to scraper findelement
+* overall cleanup and fixes
 
 Possible extensions:
 * add email to user for notifications
@@ -49,3 +49,21 @@ Change list 0.3.14
 * added gameLink, priceSnapshot repository methods
 * created cronJob class
 * added scraping of game description to humble bundle scrapper
+
+Change list 0.3.20
+* implemented abstract scraping class for EA and Humble Bundle scrappers, contains saving scrapped data, more functionality to come in later version
+* fixed typo in application.properties
+* created Seller enum
+* moved entities to entity package
+* moved enum classes enums package
+* moved @Transactional from repositories to services
+* fixed chrome driver factory -> wasn't thread safe
+* slightly refactored EA scrapper -> WIP
+* refactored Humble Bundle scrapper
+* modified Game entity
+* created DTO objects
+* renamed GameLink and game link stuff to GameSeller
+* implemented repositories for gameSeller and priceSnapshot
+* modified GameService to use DTOs and new repositories
+* modified cronJob class
+* removed deprecated stuff

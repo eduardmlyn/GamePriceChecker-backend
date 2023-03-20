@@ -1,8 +1,8 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
 import cz.muni.fi.gamepricecheckerbackend.GamePriceCheckerBackendApplication
-import cz.muni.fi.gamepricecheckerbackend.model.Role
-import cz.muni.fi.gamepricecheckerbackend.model.User
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
+import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import io.mockk.every

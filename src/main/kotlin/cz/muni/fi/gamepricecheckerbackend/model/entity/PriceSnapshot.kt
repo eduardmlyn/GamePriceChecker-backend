@@ -1,4 +1,4 @@
-package cz.muni.fi.gamepricecheckerbackend.model
+package cz.muni.fi.gamepricecheckerbackend.model.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -9,26 +9,27 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import java.time.Instant
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
 @Entity
-@Table(name = "game_links")
-data class GameLink(
+@Table(name = "price_snapshot")
+data class PriceSnapshot(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: String,
-    @Column
-    val link: String,
-    @Column
-    val price: Double,
-    @Column
-    val seller: String,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
-    val game: Game
+    val game: Game,
+    @Column
+    val averagePrice: Double,
+    @Column
+    val minimumPrice: Double,
+    @Column
+    val date: Instant
 ) {
-    constructor(): this("", "", 0.0, "", Game())
+    constructor(): this("", Game(),0.0, 0.0, Instant.now())
 }

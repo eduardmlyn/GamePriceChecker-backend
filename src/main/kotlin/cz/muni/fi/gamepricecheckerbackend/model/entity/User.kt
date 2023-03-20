@@ -1,9 +1,11 @@
-package cz.muni.fi.gamepricecheckerbackend.model
+package cz.muni.fi.gamepricecheckerbackend.model.entity
 
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -33,7 +35,7 @@ data class User(
     val userName: String,
     @Column
     private val password: String,
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "game_favorites",
         joinColumns = [JoinColumn(name = "user_id")],

@@ -1,8 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.repository
 
-import cz.muni.fi.gamepricecheckerbackend.model.Role
-import cz.muni.fi.gamepricecheckerbackend.model.User
-import cz.muni.fi.gamepricecheckerbackend.service.UserService
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
+import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -12,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import kotlin.reflect.typeOf
 
 /**
  *
@@ -30,7 +28,7 @@ class UserRepositoryTest(
     @BeforeEach
     fun init() {
 //        every { User("",Role.USER, "userTest", "user") } answers { User() }
-        testUser = User("testId",Role.USER, "userTest", "user", emptyList())
+        testUser = User("testId", Role.USER, "userTest", "user", emptyList())
         println(testUser)
         entityManager.persist(testUser)
         entityManager.flush()
