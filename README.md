@@ -3,10 +3,13 @@ TODOS:
 * change feignClient to requestline?
 * add try catch to scraper findelement
 * overall cleanup and fixes
+* change scraping to just get the catalog data with price every day and check for any difference in description/image and other data every week/month
+* move saving scrapped games to gameService
 
 Possible extensions:
 * add email to user for notifications
 * more game provider API's/scraping
+* scrape data from EA for all platforms not PC only
 
 
 Change list 0.2.21:

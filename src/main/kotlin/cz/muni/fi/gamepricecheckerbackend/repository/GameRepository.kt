@@ -13,11 +13,10 @@ import org.springframework.data.repository.PagingAndSortingRepository
 interface GameRepository: JpaRepository<Game, String>, PagingAndSortingRepository<Game, String> {
     fun findGameByName(name: String): Game?
     fun findGameById(id: String): Game?
-    // are these needed?
     @Modifying
-    @Query("UPDATE Game g set g.description = ?2 where g.id = ?1")
-    fun changeDescription(gameId: String, description: String): Game?
+    @Query("update Game g set g.description = ?2, g.imageUrl = ?3, g.releaseDate = ?4 where g.id = ?1")
+    fun changeAllGameDetails(gameId: String, description: String, imageUrl: String, releaseDate: String): Game?
     @Modifying
-    @Query("UPDATE Game g set g.imageUrl =?2 where g.id = ?1")
-    fun changeImageUrl(gameId: String, imageUrl: String): Game?
+    @Query("update Game g set g.description = ?2, g.imageUrl = ?3 where g.id = ?1")
+    fun changeImageAndDescription(gameId: String, description: String, imageUrl: String): Game?
 }

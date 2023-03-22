@@ -1,6 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.util
 
 import cz.muni.fi.gamepricecheckerbackend.BaseIntegrationTest
+import cz.muni.fi.gamepricecheckerbackend.util.scrapper.EAScrapper
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.chrome.ChromeDriver
@@ -16,7 +17,7 @@ class EAScrapperTest : BaseIntegrationTest() {
 
     @Test
     fun scrape() {
-        val eaGames = EAScrapper.scrape(webDriver)
+        val eaGames = EAScrapper.scrapeGamePrices(webDriver)
 
         Assertions.assertEquals(eaGames.size, 1)
 

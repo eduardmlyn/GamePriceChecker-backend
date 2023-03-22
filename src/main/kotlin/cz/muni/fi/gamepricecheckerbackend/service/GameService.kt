@@ -5,6 +5,8 @@ import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDetailDTO
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameSellerDTO
 import cz.muni.fi.gamepricecheckerbackend.model.dto.PriceSnapshotDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
+import cz.muni.fi.gamepricecheckerbackend.model.entity.GameSeller
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.PriceSnapshotRepository
@@ -60,7 +62,7 @@ class GameService(
     }
 
     private fun getSellerLinksForGame(gameId: String): Set<GameSellerDTO> {
-        return gameSellerRepository.findGameSellerByGameId(gameId)
+        return gameSellerRepository.findGameSellersByGameId(gameId)
             .map {
                 GameSellerDTO(it.seller, it.link, it.price)
             }.toSet()
@@ -73,15 +75,89 @@ class GameService(
             }
     }
 
-    fun addDescription(gameId: String, description: String): Game? {
-        return gameRepository.changeDescription(gameId, description)
-    }
-
-    fun addImageUrl(gameId: String, imageUrl: String): Game? {
-        return gameRepository.changeImageUrl(gameId, imageUrl)
-    }
-
     fun getPageCount(): Long {
         return gameRepository.count() / PAGE_SIZE
+    }
+
+    fun saveScrappedGame(
+        gameName: String,
+        gamePrice: Double,
+        gameDescription: String,
+        gameImage: String,
+        gameRelease: String?,
+        gameLink: String,
+        sellerName: Seller
+    ) {
+        val game = gameRepository.findGameByName(gameName)
+        if (game == null) {
+            val newGame = Game(gameName, gameDescription, gameImage, gameRelease)
+            val savedGame = gameRepository.save(newGame)
+            val newGameSeller = GameSeller(gameLink, gamePrice, sellerName, savedGame)
+            gameSellerRepository.save(newGameSeller)
+            return
+        }
+        val gameSellers = gameSellerRepository.findGameSellersByGameId(game.id)
+        if (gameSellers.all { it.seller != sellerName }) {
+            val newGameSeller = GameSeller(gameLink, gamePrice, sellerName, game)
+            gameSellerRepository.save(newGameSeller)
+            return
+        }
+
+        val currentGameSeller = gameSellers.single { it.seller == sellerName }
+        if (currentGameSeller.price != gamePrice) {
+            currentGameSeller.price = gamePrice
+        }
+        if (currentGameSeller.link != gameLink) {
+            currentGameSeller.link = gameLink
+        }
+        gameSellerRepository.save(currentGameSeller)
+    }
+
+    fun saveGamePrice(
+        gameName: String,
+        gamePrice: Double,
+        gameLink: String,
+        sellerName: Seller
+    ) {
+        val game = gameRepository.findGameByName(gameName)
+        if (game == null) {
+            saveNewGame(gameName, gamePrice, gameLink, sellerName)
+            return
+        }
+        val gameSeller = gameSellerRepository.findGameSellerByGameIdAndSeller(game.id, sellerName)
+            ?: GameSeller(sellerName, game)
+        gameSeller.price = gamePrice
+        gameSeller.link = gameLink
+        gameSellerRepository.save(gameSeller)
+    }
+
+    private fun saveNewGame(
+        gameName: String,
+        gamePrice: Double,
+        gameLink: String,
+        sellerName: Seller
+    ) {
+        val newGame = Game(gameName)
+        val game = gameRepository.save(newGame)
+        val newGameSeller = GameSeller(gameLink, gamePrice, sellerName, game)
+        gameSellerRepository.save(newGameSeller)
+    }
+
+    // TODO
+
+    fun getUpdatableGamesForSeller(seller: Seller): List<GameSeller> {
+        return gameSellerRepository.findGameSellersBySeller(seller).filter {
+            val game = it.game
+            game.description == null || game.imageUrl == null
+        }
+    }
+
+    fun updateGameInformation(gameId: String, description: String, imageUrl: String, releaseDate: String?) {
+        val game = gameRepository.findGameById(gameId) ?: return
+        if (releaseDate == null) {
+            gameRepository.changeImageAndDescription(game.id, description, imageUrl)
+            return
+        }
+        gameRepository.changeAllGameDetails(game.id, description, imageUrl, releaseDate)
     }
 }

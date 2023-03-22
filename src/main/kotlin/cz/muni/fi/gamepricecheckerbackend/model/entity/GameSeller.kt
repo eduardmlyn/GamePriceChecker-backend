@@ -32,5 +32,6 @@ data class GameSeller(
     val game: Game
 ) {
     constructor(): this("", "", 0.0, Seller.STEAM, Game())
+    constructor(seller: Seller, game: Game): this("", "", 0.0, seller, game)
     constructor(link: String, price: Double, seller: Seller, game: Game): this("", link, price, seller, game)
 }

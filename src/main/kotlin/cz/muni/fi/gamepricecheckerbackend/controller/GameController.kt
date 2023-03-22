@@ -7,8 +7,8 @@ import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDetailDTO
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamAllGamesResponse
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import cz.muni.fi.gamepricecheckerbackend.util.ChromeDriverFactory
-import cz.muni.fi.gamepricecheckerbackend.util.EAScrapper
-import cz.muni.fi.gamepricecheckerbackend.util.HumbleBundleScrapper
+import cz.muni.fi.gamepricecheckerbackend.util.scrapper.EAScrapper
+import cz.muni.fi.gamepricecheckerbackend.util.scrapper.HumbleBundleScrapper
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -83,7 +83,7 @@ class GameController(
     fun getScrapedEaGames(): Any {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
-            eaScrapper.scrape(webDriver)
+            eaScrapper.scrapeGamePrices(webDriver)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
         }
@@ -94,7 +94,7 @@ class GameController(
     fun getScrapedHumbleBundleGames(): Any {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
-            humbleBundleScrapper.scrape(webDriver)
+            humbleBundleScrapper.scrapeGamePrices(webDriver)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
         }

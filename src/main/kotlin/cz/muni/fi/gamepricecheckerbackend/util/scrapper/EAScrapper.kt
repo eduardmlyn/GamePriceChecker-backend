@@ -1,7 +1,7 @@
-package cz.muni.fi.gamepricecheckerbackend.util
+package cz.muni.fi.gamepricecheckerbackend.util.scrapper
 
-import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
-import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
+import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
@@ -13,11 +13,9 @@ import java.time.Duration
  *
  * @author Eduard Stefan Mlynarik
  */
+// TODO add webdriverWaits
 @Service
-class EAScrapper(
-    gameRepository: GameRepository,
-    gameSellerRepository: GameSellerRepository
-) : AbstractScrapper(gameRepository, gameSellerRepository) {
+class EAScrapper(val gameService: GameService) : AbstractScrapper() {
     @Value(value = "\${app.ea-games.base.url}")
     lateinit var eaBaseUrl: String
 
@@ -27,8 +25,20 @@ class EAScrapper(
     // is this even needed?
     lateinit var originalWindow: String
 
-    override fun scrape(driver: ChromeDriver) {
+    private val seller = Seller.EA_GAMES
+
+    override fun scrapeGamePrices(driver: ChromeDriver) {
         setCatalogWindow(driver)
+        val allLinks = getAllCatalogLinks(driver)
+        allLinks.forEach {
+            if (!goToGameDetailPage(driver, "$eaBaseUrl$it")) return@forEach
+            val gameName = getGameName(driver)
+            println(gameName)
+        }
+    }
+
+    override fun scrapeGameDetails(driver: ChromeDriver) {
+
     }
 
     private fun setCatalogWindow(driver: ChromeDriver) {
@@ -40,18 +50,19 @@ class EAScrapper(
         val allCatalogLinks = mutableListOf<String>()
         while (true) {
             Thread.sleep(Duration.ofSeconds(5))
-            val (currentCatalogLinks, currentCatalogImages) = getCurrentCatalogLinks(driver)
+            val currentCatalog = getCurrentCatalog(driver)
+            allCatalogLinks += currentCatalog.keys
+            return allCatalogLinks
             if (!goToNextPageIfAble(driver)) return allCatalogLinks
         }
     }
 
-    private fun getCurrentCatalogLinks(driver: ChromeDriver): Pair<List<String>, Map<String, String>> {
+    private fun getCurrentCatalog(driver: ChromeDriver): Map<String, String> {
         val shadowRoot = driver.findElement(By.xpath("(//ea-box-set)[2]")).shadowRoot
         val catalogElements = shadowRoot.findElements(By.cssSelector("ea-game-box"))
-        val imageLinks =
-            catalogElements.associate { it.getAttribute("main-link-url") to it.getAttribute("background-image") }
-        val links = imageLinks.keys.toList()
-        return Pair(links, imageLinks)
+        return catalogElements.associate {
+            it.getAttribute("main-link-url") to it.getAttribute("background-image")
+        }
     }
 
     private fun goToNextPageIfAble(driver: ChromeDriver): Boolean {
@@ -65,10 +76,11 @@ class EAScrapper(
         return true
     }
 
-    private fun goToGameDetailPage(driver: ChromeDriver, path: String) {
+    private fun goToGameDetailPage(driver: ChromeDriver, path: String): Boolean {
         driver.get(path)
         Thread.sleep(Duration.ofSeconds(3))
         // TODO check for complications in path/on site
+        return true
     }
 
     private fun getGameName(driver: ChromeDriver): String {
