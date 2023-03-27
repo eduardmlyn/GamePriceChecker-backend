@@ -8,6 +8,6 @@ import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
  */
 data class GameSellerDTO(
     val seller: Seller,
-    val link: String,
+    val link: String?,
     val price: Double
 )

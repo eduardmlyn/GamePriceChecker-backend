@@ -35,5 +35,5 @@ data class Game(
 ) {
     constructor(): this("", "", "", "", "", emptySet(), emptyList())
     constructor(name: String): this("", name, null, null, null, emptySet(), emptyList())
-    constructor(name: String, description: String, imageUrl: String, releaseDate: String?): this("", name, description, imageUrl, releaseDate, emptySet(), emptyList())
+    constructor(name: String, description: String?, imageUrl: String?, releaseDate: String?): this("", name, description, imageUrl, releaseDate, emptySet(), emptyList())
 }

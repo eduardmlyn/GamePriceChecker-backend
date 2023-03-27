@@ -8,5 +8,4 @@ import org.openqa.selenium.chrome.ChromeDriver
  */
 interface Scrapper {
     fun scrapeGamePrices(driver: ChromeDriver)
-    fun scrapeGameDetails(driver: ChromeDriver)
 }

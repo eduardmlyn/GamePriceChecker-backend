@@ -76,7 +76,7 @@ class GameController(
     fun getSteamGameDetail(
         @Parameter(description = "Application id", required = true) @PathVariable appId: Int
     ): Any {
-        return steamGameDetailClient.getGameDetails(appId, "CZ")
+        return steamGameDetailClient.getGameDetails(listOf(appId), "CZ", filter = null)
     }
 
     @GetMapping("/scrape/ea-games")

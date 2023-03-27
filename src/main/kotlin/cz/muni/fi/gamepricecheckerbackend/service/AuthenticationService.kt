@@ -52,6 +52,6 @@ class AuthenticationService(
     }
 
     fun invalidate(jwtToken: String) {
-
+        TODO()
     }
 }

@@ -18,20 +18,13 @@ class UserService(private val userRepository: UserRepository, private val jwtSer
         return userRepository.findUserByUserName(username)
     }
 
-    fun createUser(username: String, password: String): User? {
-        if (userRepository.existsUserByUserName(username)) {
-            return null
-        }
-        return userRepository.save(User(username, password, Role.USER))
-    }
-
     fun deleteUser(username: String): User? {
         return userRepository.deleteUserByUserName(username)
     }
 
-    fun editUsername(username: String): User? {
+    fun editUsername(username: String) {
         val currentUserName = jwtService.getUserName()
-        val user = findByUsername(currentUserName) ?: return null
-        return userRepository.changeUsername(username, user.id)
+        val user = findByUsername(currentUserName) ?: return
+        userRepository.changeUsername(username, user.id)
     }
 }

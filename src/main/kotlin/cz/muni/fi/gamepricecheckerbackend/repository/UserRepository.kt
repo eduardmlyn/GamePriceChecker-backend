@@ -12,9 +12,7 @@ import org.springframework.data.jpa.repository.Query
 interface UserRepository: JpaRepository<User, String> {
     fun findUserByUserName(username: String): User?
     fun deleteUserByUserName(username: String): User?
-    // needed? isnt findUserByUsername better?
-    fun existsUserByUserName(username: String): Boolean
     @Modifying
     @Query("UPDATE User u set u.userName = ?1 where u.id = ?2")
-    fun changeUsername(username: String, id: String): User?
+    fun changeUsername(username: String, id: String)
 }

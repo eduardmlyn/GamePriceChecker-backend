@@ -1,30 +1,23 @@
 package cz.muni.fi.gamepricecheckerbackend.model.steam
 
 import com.fasterxml.jackson.annotation.JsonAlias
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class SteamGameDetails(
-    val type: String, // check for "game"
-    val name: String,
+    val name: String?, // TODO remove?
     @JsonAlias("is_free", "isFree")
-    val isFree: Boolean,
-    // TODO choose from the 3 descriptions
-    @JsonAlias("detailed_description", "detailedDescription")
-    val detailedDescription: String,
+    val isFree: Boolean?,
     @JsonAlias("about_the_game", "aboutTheGame")
-    val aboutTheGame: String,
-    @JsonAlias("short_description", "shortDescription")
-    val shortDescription: String,
+    val aboutTheGame: String?,
     @JsonAlias("header_image", "headerImage")
-    val headerImage: String?, // can be null?
-    // add categories?/genres?
-    // val categories: List<Any> // { id: .., description: ..} -> both categories and genres
-    val screenshots: List<Screenshot>,
+    val headerImage: String?,
     @JsonAlias("release_date", "releaseDate")
-    val releaseDate: ReleaseDate,
+    val releaseDate: ReleaseDate?,
     @JsonAlias("price_overview", "priceOverview")
     val priceOverview: PriceOverview?
 )

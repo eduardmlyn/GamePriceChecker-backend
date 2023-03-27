@@ -40,10 +40,11 @@ class UserController(val userService: UserService) {
     @PutMapping("/editUsername")
     fun editUserUsername(
         @RequestParam(required = true) username: String
-    ): ResponseEntity<ResponseWrapper<User?>> {
-        val user = userService.editUsername(username)
+    ): ResponseEntity<ResponseWrapper<Nothing?>> {
+        // TODO redo
+        userService.editUsername(username)
             ?: return ResponseEntity.badRequest().body(ResponseWrapper("User not found/username already in use", data = null))
-        return ResponseEntity.ok(ResponseWrapper("Success", data = user))
+        return ResponseEntity.ok(ResponseWrapper("Success", data = null))
     }
 
     // TODO add changing password? -> might be needed email and more complications

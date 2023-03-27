@@ -14,9 +14,12 @@ interface GameRepository: JpaRepository<Game, String>, PagingAndSortingRepositor
     fun findGameByName(name: String): Game?
     fun findGameById(id: String): Game?
     @Modifying
-    @Query("update Game g set g.description = ?2, g.imageUrl = ?3, g.releaseDate = ?4 where g.id = ?1")
-    fun changeAllGameDetails(gameId: String, description: String, imageUrl: String, releaseDate: String): Game?
+    @Query("update Game g set g.imageUrl = ?2 where g.id = ?1")
+    fun changeImage(gameId: String, imageUrl: String)
     @Modifying
-    @Query("update Game g set g.description = ?2, g.imageUrl = ?3 where g.id = ?1")
-    fun changeImageAndDescription(gameId: String, description: String, imageUrl: String): Game?
+    @Query("update Game g set g.description = ?2 where g.id = ?1")
+    fun changeDescription(gameId: String, description: String)
+    @Modifying
+    @Query("update Game g set g.releaseDate = ?2 where g.id = ?1")
+    fun changeReleaseDate(gameId: String, releaseDate: String)
 }

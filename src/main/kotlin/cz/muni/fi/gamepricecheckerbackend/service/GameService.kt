@@ -34,6 +34,7 @@ class GameService(
         return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
     }
 
+    // TODO remove?
     fun getGameDetailsById(gameId: String): GameDetailDTO? {
         val game = gameRepository.findGameById(gameId) ?: return null
         return GameDetailDTO(
@@ -79,13 +80,13 @@ class GameService(
         return gameRepository.count() / PAGE_SIZE
     }
 
-    fun saveScrappedGame(
+    fun saveGame(
         gameName: String,
         gamePrice: Double,
-        gameDescription: String,
-        gameImage: String,
+        gameDescription: String?,
+        gameImage: String?,
         gameRelease: String?,
-        gameLink: String,
+        gameLink: String?,
         sellerName: Seller
     ) {
         val game = gameRepository.findGameByName(gameName)
@@ -96,6 +97,7 @@ class GameService(
             gameSellerRepository.save(newGameSeller)
             return
         }
+        updateGameInformation(game, gameDescription, gameImage, gameRelease)
         val gameSellers = gameSellerRepository.findGameSellersByGameId(game.id)
         if (gameSellers.all { it.seller != sellerName }) {
             val newGameSeller = GameSeller(gameLink, gamePrice, sellerName, game)
@@ -116,13 +118,13 @@ class GameService(
     fun saveGamePrice(
         gameName: String,
         gamePrice: Double,
-        gameLink: String,
+        gameLink: String?,
         sellerName: Seller
     ) {
-        val game = gameRepository.findGameByName(gameName)
+        var game = gameRepository.findGameByName(gameName)
         if (game == null) {
-            saveNewGame(gameName, gamePrice, gameLink, sellerName)
-            return
+            game = Game(gameName)
+            gameRepository.save(game)
         }
         val gameSeller = gameSellerRepository.findGameSellerByGameIdAndSeller(game.id, sellerName)
             ?: GameSeller(sellerName, game)
@@ -131,20 +133,6 @@ class GameService(
         gameSellerRepository.save(gameSeller)
     }
 
-    private fun saveNewGame(
-        gameName: String,
-        gamePrice: Double,
-        gameLink: String,
-        sellerName: Seller
-    ) {
-        val newGame = Game(gameName)
-        val game = gameRepository.save(newGame)
-        val newGameSeller = GameSeller(gameLink, gamePrice, sellerName, game)
-        gameSellerRepository.save(newGameSeller)
-    }
-
-    // TODO
-
     fun getUpdatableGamesForSeller(seller: Seller): List<GameSeller> {
         return gameSellerRepository.findGameSellersBySeller(seller).filter {
             val game = it.game
@@ -152,12 +140,15 @@ class GameService(
         }
     }
 
-    fun updateGameInformation(gameId: String, description: String, imageUrl: String, releaseDate: String?) {
-        val game = gameRepository.findGameById(gameId) ?: return
-        if (releaseDate == null) {
-            gameRepository.changeImageAndDescription(game.id, description, imageUrl)
-            return
+    fun updateGameInformation(game: Game, description: String?, imageUrl: String?, releaseDate: String?) {
+        if (game.imageUrl == null && imageUrl != null) {
+            gameRepository.changeImage(game.id, imageUrl)
         }
-        gameRepository.changeAllGameDetails(game.id, description, imageUrl, releaseDate)
+        if (game.description == null && description != null) {
+            gameRepository.changeDescription(game.id, description)
+        }
+        if (game.releaseDate == null && releaseDate != null) {
+            gameRepository.changeReleaseDate(game.id, releaseDate)
+        }
     }
 }

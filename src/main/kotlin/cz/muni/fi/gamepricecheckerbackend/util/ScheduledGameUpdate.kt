@@ -1,9 +1,8 @@
 package cz.muni.fi.gamepricecheckerbackend.util
 
-import cz.muni.fi.gamepricecheckerbackend.client.SteamGameDetailClient
-import cz.muni.fi.gamepricecheckerbackend.client.SteamGameListClient
 import cz.muni.fi.gamepricecheckerbackend.util.scrapper.EAScrapper
 import cz.muni.fi.gamepricecheckerbackend.util.scrapper.HumbleBundleScrapper
+import jakarta.annotation.PostConstruct
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -16,12 +15,20 @@ class ScheduledGameUpdate(
     val humbleBundleScrapper: HumbleBundleScrapper,
     val eaScrapper: EAScrapper,
     val chromeDriverFactory: ChromeDriverFactory,
-    val steamGameListClient: SteamGameListClient,
-    val steamGameDetailClient: SteamGameDetailClient
+    val steamDataUpdater: SteamDataUpdater
 ) {
+//    uncomment for testing methods
+//    @PostConstruct
+//    fun init() {
+//        updateSteamData()
+//        updateSteamPrices()
+//        updateEaGameData()
+//        updateHumbleBundleGamePrices()
+//        updateHumbleBundleGameData()
+//    }
 
     @Scheduled(cron = "@daily")
-    fun updateEAData() {
+    fun updateEaGameData() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
             eaScrapper.scrapeGamePrices(webDriver)
@@ -31,7 +38,7 @@ class ScheduledGameUpdate(
     }
 
     @Scheduled(cron = "@daily")
-    fun updateHumbleBundleData() {
+    fun updateHumbleBundleGamePrices() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
             humbleBundleScrapper.scrapeGamePrices(webDriver)
@@ -41,10 +48,23 @@ class ScheduledGameUpdate(
     }
 
     @Scheduled(cron = "@weekly")
+    fun updateHumbleBundleGameData() {
+        val webDriver = chromeDriverFactory.getChromeDriverInstance()
+        try {
+            humbleBundleScrapper.scrapeGameDetails(webDriver)
+        } finally {
+            chromeDriverFactory.destroyChromeDriverInstance(webDriver)
+        }
+    }
 
     @Scheduled(cron = "@daily")
+    fun updateSteamPrices() {
+        steamDataUpdater.updateGamePrices()
+    }
+
+    // might be needed to make this monthly, depends on the time of the execution
+    @Scheduled(cron = "@weekly")
     fun updateSteamData() {
-        val data = steamGameListClient.getAllGames()
-        // TODO implement
+        steamDataUpdater.updateGameDetails()
     }
 }

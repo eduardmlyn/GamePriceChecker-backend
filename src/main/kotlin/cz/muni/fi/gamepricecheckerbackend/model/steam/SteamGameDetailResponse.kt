@@ -6,5 +6,5 @@ package cz.muni.fi.gamepricecheckerbackend.model.steam
  */
 data class SteamGameDetailResponse(
     val success: Boolean,
-    val data: SteamGameDetails
+    val data: Any?
 )
