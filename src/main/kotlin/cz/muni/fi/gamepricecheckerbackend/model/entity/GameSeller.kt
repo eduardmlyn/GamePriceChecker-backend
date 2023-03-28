@@ -10,12 +10,14 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.DynamicUpdate
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
 @Entity
+@DynamicUpdate
 @Table(name = "game_seller")
 data class GameSeller(
     @Id

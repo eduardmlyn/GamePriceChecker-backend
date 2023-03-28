@@ -1,11 +1,10 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
 import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 /**
  *

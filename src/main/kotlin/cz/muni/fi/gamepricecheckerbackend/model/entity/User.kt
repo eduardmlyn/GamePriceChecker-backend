@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails
  *
  * @author Eduard Stefan Mlynarik
  */
+// TODO add Dynamic update and change to var?
 @Entity
 @Table(name = "users")
 data class User(

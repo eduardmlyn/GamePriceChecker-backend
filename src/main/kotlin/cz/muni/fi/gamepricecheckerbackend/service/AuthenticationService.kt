@@ -6,18 +6,18 @@ import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationReq
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
-import jakarta.transaction.Transactional
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class AuthenticationService(
     val userRepository: UserRepository,
     val passwordEncoder: PasswordEncoder,
@@ -25,6 +25,7 @@ class AuthenticationService(
     val authenticationManager: AuthenticationManager
 ) {
 
+    @Transactional
     fun register(userRequest: AuthenticationRequest): AuthenticationResponse? {
         if (userRepository.findUserByUserName(userRequest.username) != null) {
             return null

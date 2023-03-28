@@ -82,3 +82,7 @@ Change list 0.3.22 and 0.3.27
 * changed steam models to accept different responses
 * changed entities to allow null values
 * renamed README.md to ChangeList.md
+
+Change list 0.3.28
+* changed Transactional import and made readonly where applicable
+* added @DynamicUpdate to entities for performance

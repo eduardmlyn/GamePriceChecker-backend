@@ -10,9 +10,9 @@ import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.PriceSnapshotRepository
-import jakarta.transaction.Transactional
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 const val PAGE_SIZE = 25
 
@@ -21,7 +21,7 @@ const val PAGE_SIZE = 25
  * @author Eduard Stefan Mlynarik
  */
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class GameService(
     private val gameRepository: GameRepository,
     private val gameSellerRepository: GameSellerRepository,
@@ -80,6 +80,7 @@ class GameService(
         return gameRepository.count() / PAGE_SIZE
     }
 
+    @Transactional
     fun saveGame(
         gameName: String,
         gamePrice: Double,
@@ -115,6 +116,7 @@ class GameService(
         gameSellerRepository.save(currentGameSeller)
     }
 
+    @Transactional
     fun saveGamePrice(
         gameName: String,
         gamePrice: Double,
@@ -140,15 +142,17 @@ class GameService(
         }
     }
 
+    @Transactional
     fun updateGameInformation(game: Game, description: String?, imageUrl: String?, releaseDate: String?) {
         if (game.imageUrl == null && imageUrl != null) {
-            gameRepository.changeImage(game.id, imageUrl)
+            game.imageUrl = imageUrl
         }
         if (game.description == null && description != null) {
-            gameRepository.changeDescription(game.id, description)
+            game.description = description
         }
         if (game.releaseDate == null && releaseDate != null) {
-            gameRepository.changeReleaseDate(game.id, releaseDate)
+            game.releaseDate = releaseDate
         }
+        gameRepository.save(game)
     }
 }

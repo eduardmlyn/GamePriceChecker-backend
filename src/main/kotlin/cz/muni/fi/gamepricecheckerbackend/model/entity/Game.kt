@@ -9,12 +9,14 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.hibernate.annotations.DynamicUpdate
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
 @Entity
+@DynamicUpdate
 @Table(name = "games")
 data class Game(
     @Id
@@ -23,11 +25,11 @@ data class Game(
     @Column(nullable = false)
     val name: String,
     @Column(nullable = true, columnDefinition = "TEXT")
-    val description: String?,
+    var description: String?,
     @Column(nullable = true)
-    val imageUrl: String?,
+    var imageUrl: String?,
     @Column(nullable = true)
-    val releaseDate: String?,
+    var releaseDate: String?,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val externalLinks: Set<GameSeller>,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
