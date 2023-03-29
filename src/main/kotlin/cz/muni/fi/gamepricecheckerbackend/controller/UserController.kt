@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController
  */
 @Tag(name = "User", description = "Provides API for User")
 @RestController
+@CrossOrigin
 @RequestMapping(value = ["/user"])
 class UserController(val userService: UserService) {
     @Operation(summary = "Delete user", description = "Deletes user from system.")

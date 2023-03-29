@@ -126,7 +126,7 @@ class GameService(
         var game = gameRepository.findGameByName(gameName)
         if (game == null) {
             game = Game(gameName)
-            gameRepository.save(game)
+            game = gameRepository.save(game)
         }
         val gameSeller = gameSellerRepository.findGameSellerByGameIdAndSeller(game.id, sellerName)
             ?: GameSeller(sellerName, game)

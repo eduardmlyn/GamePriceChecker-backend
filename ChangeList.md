@@ -86,3 +86,7 @@ Change list 0.3.22 and 0.3.27
 Change list 0.3.28
 * changed Transactional import and made readonly where applicable
 * added @DynamicUpdate to entities for performance
+
+Change list 0.3.29
+* added @CrossOrigin to start connecting frontend with backend
+* fixed game save issue in GameService
