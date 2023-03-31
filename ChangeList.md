@@ -90,3 +90,11 @@ Change list 0.3.28
 Change list 0.3.29
 * added @CrossOrigin to start connecting frontend with backend
 * fixed game save issue in GameService
+
+Change list 0.3.31
+* added bigger timeout for feign
+* cleanup of game controller
+* modified and added methods to game repository
+  * note: added query to findGameByName to link games sold by Steam and Humble Bundle
+* added methods to save price snapshot
+* created event, event publisher and event listener to create price snapshots after updating data 

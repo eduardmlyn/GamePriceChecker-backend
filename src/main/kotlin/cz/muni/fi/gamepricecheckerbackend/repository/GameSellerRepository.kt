@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository
  * @author Eduard Stefan Mlynarik
  */
 interface GameSellerRepository: JpaRepository<GameSeller, String> {
-    fun findGameSellersByGameId(gameId: String): Set<GameSeller>
+    fun findGameSellersByGameId(gameId: String): List<GameSeller>
     fun findGameSellerByGameIdAndSeller(gameId: String, seller: Seller): GameSeller?
     fun findGameSellersBySeller(seller: Seller): List<GameSeller>
 }

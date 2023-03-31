@@ -6,6 +6,7 @@ import cz.muni.fi.gamepricecheckerbackend.model.dto.GameSellerDTO
 import cz.muni.fi.gamepricecheckerbackend.model.dto.PriceSnapshotDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
 import cz.muni.fi.gamepricecheckerbackend.model.entity.GameSeller
+import cz.muni.fi.gamepricecheckerbackend.model.entity.PriceSnapshot
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
@@ -60,6 +61,10 @@ class GameService(
             getSellerLinksForGame(game.id),
             getPriceSnapshotsForGame(game.id)
         )
+    }
+
+    fun getAllGamesIds(): List<String> {
+        return gameRepository.findAllGameIds()
     }
 
     private fun getSellerLinksForGame(gameId: String): Set<GameSellerDTO> {
@@ -154,5 +159,14 @@ class GameService(
             game.releaseDate = releaseDate
         }
         gameRepository.save(game)
+    }
+
+    fun getSellersForGame(gameId: String): List<GameSeller> {
+        return gameSellerRepository.findGameSellersByGameId(gameId)
+    }
+
+    @Transactional
+    fun saveSnapshot(snapshot: PriceSnapshot) {
+        priceSnapshotRepository.save(snapshot)
     }
 }

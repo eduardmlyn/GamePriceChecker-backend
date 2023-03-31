@@ -36,6 +36,8 @@ class SecurityConfig(
             .permitAll()
             .requestMatchers("/auth/**")
             .permitAll()
+            .requestMatchers("/game/init")
+            .permitAll()
             .requestMatchers("/game")
             .permitAll()
             .requestMatchers("/game/all")

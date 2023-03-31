@@ -59,7 +59,7 @@ class SteamDataUpdater(
     }
 
     private fun simulatePause() {
-        Thread.sleep(Duration.ofSeconds(3))
+        Thread.sleep(Duration.ofSeconds(5))
     }
 
     private fun savePrice(key: String, value: SteamGameDetailResponse, apps: List<SteamGame>) {

@@ -1,8 +1,8 @@
 package cz.muni.fi.gamepricecheckerbackend.util
 
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.util.scrapper.EAScrapper
 import cz.muni.fi.gamepricecheckerbackend.util.scrapper.HumbleBundleScrapper
-import jakarta.annotation.PostConstruct
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -15,25 +15,28 @@ class ScheduledGameUpdate(
     val humbleBundleScrapper: HumbleBundleScrapper,
     val eaScrapper: EAScrapper,
     val chromeDriverFactory: ChromeDriverFactory,
-    val steamDataUpdater: SteamDataUpdater
+    val steamDataUpdater: SteamDataUpdater,
+    val taskDoneEventPublisher: TaskDoneEventPublisher
 ) {
 //    uncomment for testing methods
-//    @PostConstruct
-//    fun init() {
+    fun init() {
 //        updateSteamData()
-//        updateSteamPrices()
-//        updateEaGameData()
-//        updateHumbleBundleGamePrices()
+        updateSteamPrices()
+        updateEaGameData()
+        updateHumbleBundleGamePrices()
 //        updateHumbleBundleGameData()
-//    }
+    }
 
     @Scheduled(cron = "@daily")
     fun updateEaGameData() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
             eaScrapper.scrapeGamePrices(webDriver)
+        } catch (e: Exception) {
+            println(e)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
+            taskDoneEventPublisher.publishTaskDone("Updating ea game prices completed.", Seller.EA_GAMES)
         }
     }
 
@@ -42,8 +45,11 @@ class ScheduledGameUpdate(
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
             humbleBundleScrapper.scrapeGamePrices(webDriver)
+        } catch (e: Exception) {
+            println(e)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
+            taskDoneEventPublisher.publishTaskDone("Updating humble bundle game prices completed.", Seller.HUMBLE_BUNDLE)
         }
     }
 
@@ -59,7 +65,13 @@ class ScheduledGameUpdate(
 
     @Scheduled(cron = "@daily")
     fun updateSteamPrices() {
-        steamDataUpdater.updateGamePrices()
+        try {
+            steamDataUpdater.updateGamePrices()
+        } catch (e: Exception) {
+            println(e)
+        } finally {
+            taskDoneEventPublisher.publishTaskDone("Updating steam game prices completed.", Seller.STEAM)
+        }
     }
 
     // might be needed to make this monthly, depends on the time of the execution
