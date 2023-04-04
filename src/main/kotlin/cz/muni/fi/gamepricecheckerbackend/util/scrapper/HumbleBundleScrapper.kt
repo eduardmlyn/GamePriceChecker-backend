@@ -6,6 +6,7 @@ import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.Select
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service
  */
 // TODO add catching exceptions and resolve them
 @Service
-class HumbleBundleScrapper(val gameService: GameService) : AbstractScrapper() {
+class HumbleBundleScrapper(val gameService: GameService, val logger: Logger) : AbstractScrapper() {
     @Value(value = "\${app.humble-bundle.base.url}")
     lateinit var hbBaseUrl: String
 
@@ -32,7 +33,12 @@ class HumbleBundleScrapper(val gameService: GameService) : AbstractScrapper() {
             simulateUserBehaviour()
             val catalogElements = getCatalogGameElements(driver)
             catalogElements.forEach {
-                extractAndSaveGameDataFromElement(driver, it)
+                try {
+                    extractAndSaveGameDataFromElement(driver, it)
+                } catch (e: Exception) {
+                    logger.error(e.message)
+                    println(e)
+                }
             }
             if (!goToNextPageIfAble(driver)) return
         }
@@ -41,10 +47,15 @@ class HumbleBundleScrapper(val gameService: GameService) : AbstractScrapper() {
      fun scrapeGameDetails(driver: ChromeDriver) {
         val gamesForSeller = gameService.getUpdatableGamesForSeller(seller)
         gamesForSeller.forEach {
-            setGameDetailWindow(driver, it.link!!)
-            val description = getGameDescription(driver)
-            val imageUrl = getGameImage(driver)
-            gameService.updateGameInformation(it.game, description, imageUrl, null)
+            try {
+                setGameDetailWindow(driver, it.link!!)
+                val description = getGameDescription(driver)
+                val imageUrl = getGameImage(driver)
+                gameService.updateGameInformation(it.game, description, imageUrl, null)
+            } catch (e: Exception) {
+                logger.error(e.message)
+                println(e)
+            }
         }
     }
 

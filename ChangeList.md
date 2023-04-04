@@ -97,4 +97,11 @@ Change list 0.3.31
 * modified and added methods to game repository
   * note: added query to findGameByName to link games sold by Steam and Humble Bundle
 * added methods to save price snapshot
-* created event, event publisher and event listener to create price snapshots after updating data 
+* created event, event publisher and event listener to create price snapshots after updating data
+
+Change list 0.4.4
+* slowly migrate to "production" state
+* changed, implemented paging/sorting/ordering
+* added logging
+* added try catch blocks to try to "skip" errors
+* prepared method that starts all the scheduled jobs in different threads 

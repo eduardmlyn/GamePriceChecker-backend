@@ -30,7 +30,7 @@ class ChromeDriverFactory {
             Chrome/60.0.3112.50 Safari/537.36""".trimIndent()
         options.addArguments(
             "user-agent=$userAgent",
-//            "--headless=new",
+            "--headless=new",
             "--window-size=1920,1080",
             "--disable-extensions",
             "--start-maximized",

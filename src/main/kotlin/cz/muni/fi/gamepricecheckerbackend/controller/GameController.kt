@@ -2,6 +2,8 @@ package cz.muni.fi.gamepricecheckerbackend.controller
 
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDetailDTO
+import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import cz.muni.fi.gamepricecheckerbackend.util.ScheduledGameUpdate
@@ -42,20 +44,23 @@ class GameController(
     @Operation(summary = "Get all games", description = "Returns games according to page.")
     @GetMapping("/all")
     fun getAllGames(
-        @Parameter(description = "Page", required = false) @RequestParam page: Int?
+        @Parameter(description = "Page", required = false) @RequestParam page: Int?,
+        @Parameter(description = "Page size", required = true) @RequestParam pageSize: Int,
+        @Parameter(description = "Sort by", required = false) @RequestParam sortBy: SortBy?,
+        @Parameter(description = "Order direction", required = false) @RequestParam order: Order?
     ): ResponseEntity<ResponseWrapper<List<GameDTO>>> {
         return ResponseEntity.ok(
             ResponseWrapper(
                 "Successfully returned page number ${page ?: 0}",
-                gameService.getGames(page ?: 0)
+                gameService.getGames(page ?: 0, pageSize, sortBy ?: SortBy.NAME, order ?: Order.ASC)
             )
         )
     }
 
     @Operation(summary = "Get page count", description = "Returns number of pages.")
-    @GetMapping("/page-count")
-    fun getPageCount(): ResponseEntity<ResponseWrapper<Long>> {
-        return ResponseEntity.ok(ResponseWrapper("Success", gameService.getPageCount()))
+    @GetMapping("/count")
+    fun getGamesCount(): ResponseEntity<ResponseWrapper<Long>> {
+        return ResponseEntity.ok(ResponseWrapper("Success", gameService.getGamesCount()))
     }
 
     //----------------------TESTING ENDPOINTS----------------------\\

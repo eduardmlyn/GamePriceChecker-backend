@@ -11,6 +11,7 @@ import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamPriceOverview
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import org.springframework.stereotype.Component
 import java.time.Duration
+import kotlin.math.min
 
 /**
  *
@@ -32,18 +33,22 @@ class SteamDataUpdater(
         val apps = steamGameListClient.getAllGames().appList.apps
         val appIds = apps.map { it.appId }
         var start = 0
-        var end = 800 // seems to be the upper limit of the size of the request
+        var end = 700
         while (true) {
-            if (start >= apps.size) return
-            if (end >= apps.size) end = apps.size - 1
-            val currentAppIds = appIds.subList(start, end)
-            val prices = steamGameDetailClient.getGameDetails(currentAppIds, countryCode, filter = filter)
-            prices.forEach { (key, value) ->
-                savePrice(key, value, apps)
+            try {
+                if (start >= apps.size - 1) return
+                println("Getting apps from $start to $end meaning ${end/700} iteration")
+                val currentAppIds = appIds.subList(start, end)
+                val prices = steamGameDetailClient.getGameDetails(currentAppIds, countryCode, filter = filter)
+                prices.forEach { (key, value) ->
+                    savePrice(key, value, apps)
+                }
+                start = end
+                end = min(end  + 700, apps.size - 1)
+//                simulatePause()
+            } catch (e: Exception) {
+                println("An error with message: ${e.message} at the ${end/700} iteration")
             }
-            start = end
-            end += 800
-            simulatePause()
         }
     }
 
@@ -51,15 +56,19 @@ class SteamDataUpdater(
         val apps = steamGameListClient.getAllGames().appList.apps
         val appIds = apps.map { it.appId }
         appIds.forEach { currentAppId ->
-            val gameDetails = steamGameDetailClient.getGameDetails(listOf(currentAppId), countryCode, filter = null)
-            val key = gameDetails.keys.single()
-            val value = gameDetails[key]!!
-            saveDetails(key, value, apps)
+            try {
+                val gameDetails = steamGameDetailClient.getGameDetails(listOf(currentAppId), countryCode, filter = null)
+                val key = gameDetails.keys.single()
+                val value = gameDetails[key]!!
+                saveDetails(key, value, apps)
+            } catch (e: Exception) {
+                println(e)
+            }
         }
     }
 
     private fun simulatePause() {
-        Thread.sleep(Duration.ofSeconds(5))
+        Thread.sleep(Duration.ofSeconds(3))
     }
 
     private fun savePrice(key: String, value: SteamGameDetailResponse, apps: List<SteamGame>) {
@@ -77,7 +86,8 @@ class SteamDataUpdater(
         val jsonValue = objectMapper.writeValueAsString(value.data)
         val steamGameDetails = objectMapper.readValue(jsonValue, SteamGameDetails::class.java)
         val gameName = apps.find { it.appId == appId }!!.name
-        val description = steamGameDetails.aboutTheGame?.replace(Regex("<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+>"), "")
+        val description =
+            steamGameDetails.aboutTheGame?.replace(Regex("<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+>"), "")
         val image = steamGameDetails.headerImage
         val releaseDate = steamGameDetails.releaseDate?.date
         val price: Double = if (steamGameDetails.isFree == true) {

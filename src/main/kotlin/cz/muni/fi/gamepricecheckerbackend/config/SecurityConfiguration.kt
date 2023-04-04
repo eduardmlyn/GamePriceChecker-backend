@@ -36,21 +36,13 @@ class SecurityConfig(
             .permitAll()
             .requestMatchers("/auth/**")
             .permitAll()
-            .requestMatchers("/game/init")
-            .permitAll()
             .requestMatchers("/game")
+            .permitAll()
+            .requestMatchers("/game/init")
             .permitAll()
             .requestMatchers("/game/all")
             .permitAll()
-            .requestMatchers("/game/test/all")// TODO REMOVE, ONLY FOR TESTING FEIGN
-            .permitAll()
-            .requestMatchers("/page-count")
-            .permitAll()
-            .requestMatchers("/game/test/detail/*") // TODO remove
-            .permitAll()
-            .requestMatchers("/game/scrape/ea-games") // TODO remove
-            .permitAll()
-            .requestMatchers("/game/scrape/humble-bundle") // TODO remove
+            .requestMatchers("/game/count")
             .permitAll()
             .anyRequest()
             .authenticated()

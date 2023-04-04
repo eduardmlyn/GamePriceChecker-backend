@@ -1,0 +1,11 @@
+<configuration scan="true" scanPeriod="30 seconds" debug="true">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+
+    <logger name="cz.muni.fi.gamepricecheckerbackend" level="DEBUG"/>
+    <logger name="org.openqa.selenium" level="DEBUG"/>
+
+    <root level="INFO"/>
+
+</configuration>

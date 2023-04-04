@@ -7,15 +7,17 @@ import cz.muni.fi.gamepricecheckerbackend.model.dto.PriceSnapshotDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
 import cz.muni.fi.gamepricecheckerbackend.model.entity.GameSeller
 import cz.muni.fi.gamepricecheckerbackend.model.entity.PriceSnapshot
+import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
 import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.PriceSnapshotRepository
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-const val PAGE_SIZE = 25
 
 /**
  *
@@ -29,10 +31,18 @@ class GameService(
     private val priceSnapshotRepository: PriceSnapshotRepository
 ) {
 
-    fun getGames(page: Int): List<GameDTO> {
-        // CAN BE SORTING AS 3rd PARAM
-        val games = gameRepository.findAll(PageRequest.of(page, PAGE_SIZE)).content
-        return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
+    fun getGames(page: Int, pageSize: Int, sortBy: SortBy, order: Order): List<GameDTO> {
+        println(sortBy.value)
+        return when (order) {
+            Order.ASC -> {
+                val games = gameRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy.value).ascending())).content
+                games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
+            }
+            Order.DESC -> {
+                val games = gameRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy.value).descending())).content
+                games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
+            }
+        }
     }
 
     // TODO remove?
@@ -81,8 +91,8 @@ class GameService(
             }
     }
 
-    fun getPageCount(): Long {
-        return gameRepository.count() / PAGE_SIZE
+    fun getGamesCount(): Long {
+        return gameRepository.count()
     }
 
     @Transactional
