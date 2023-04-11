@@ -7,16 +7,17 @@ import cz.muni.fi.gamepricecheckerbackend.model.dto.PriceSnapshotDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
 import cz.muni.fi.gamepricecheckerbackend.model.entity.GameSeller
 import cz.muni.fi.gamepricecheckerbackend.model.entity.PriceSnapshot
-import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
-import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
-import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
+import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
+import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.PriceSnapshotRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.Date
 
 
 /**
@@ -45,7 +46,6 @@ class GameService(
         }
     }
 
-    // TODO remove?
     fun getGameDetailsById(gameId: String): GameDetailDTO? {
         val game = gameRepository.findGameById(gameId) ?: return null
         return GameDetailDTO(
@@ -59,6 +59,7 @@ class GameService(
         )
     }
 
+    // TODO remove?
     fun getGameDetailsByName(gameName: String): GameDetailDTO? {
         val game = gameRepository.findGameByName(gameName) ?: return null
 
@@ -101,7 +102,7 @@ class GameService(
         gamePrice: Double,
         gameDescription: String?,
         gameImage: String?,
-        gameRelease: String?,
+        gameRelease: Date?,
         gameLink: String?,
         sellerName: Seller
     ) {
@@ -150,15 +151,12 @@ class GameService(
         gameSellerRepository.save(gameSeller)
     }
 
-    fun getUpdatableGamesForSeller(seller: Seller): List<GameSeller> {
-        return gameSellerRepository.findGameSellersBySeller(seller).filter {
-            val game = it.game
-            game.description == null || game.imageUrl == null
-        }
+    fun getUpdatableGamesForSeller(seller: Seller): List<Pair<Game, GameSeller>> {
+        return gameRepository.findGamesBySeller(seller)
     }
 
     @Transactional
-    fun updateGameInformation(game: Game, description: String?, imageUrl: String?, releaseDate: String?) {
+    fun updateGameInformation(game: Game, description: String?, imageUrl: String?, releaseDate: Date?) {
         if (game.imageUrl == null && imageUrl != null) {
             game.imageUrl = imageUrl
         }

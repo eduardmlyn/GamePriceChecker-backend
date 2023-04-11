@@ -44,14 +44,14 @@ class HumbleBundleScrapper(val gameService: GameService, val logger: Logger) : A
         }
     }
 
-     fun scrapeGameDetails(driver: ChromeDriver) {
+    fun scrapeGameDetails(driver: ChromeDriver) {
         val gamesForSeller = gameService.getUpdatableGamesForSeller(seller)
         gamesForSeller.forEach {
             try {
-                setGameDetailWindow(driver, it.link!!)
+                setGameDetailWindow(driver, it.second.link!!)
                 val description = getGameDescription(driver)
                 val imageUrl = getGameImage(driver)
-                gameService.updateGameInformation(it.game, description, imageUrl, null)
+                gameService.updateGameInformation(it.first, description, imageUrl, null)
             } catch (e: Exception) {
                 logger.error(e.message)
                 println(e)

@@ -26,7 +26,7 @@ class AuthenticationController(val authenticationService: AuthenticationService)
         summary = "Sign up new account",
         description = "Creates new account if there isn't a user with the given username."
     )
-    @PostMapping("/sign-up")
+    @PostMapping("/register")
     fun register(
         @RequestBody request: AuthenticationRequest
     ): ResponseEntity<ResponseWrapper<AuthenticationResponse?>> {
@@ -37,7 +37,7 @@ class AuthenticationController(val authenticationService: AuthenticationService)
     }
 
     @Operation(summary = "Register user", description = "Registers user and returns user token.")
-    @PostMapping("/sign-in")
+    @PostMapping("/login")
     fun authenticate(
         @RequestBody request: AuthenticationRequest
     ): ResponseEntity<ResponseWrapper<AuthenticationResponse?>> {
@@ -47,14 +47,5 @@ class AuthenticationController(val authenticationService: AuthenticationService)
         } else {
             ResponseEntity.ok(ResponseWrapper("Successfully signed in", authStatus))
         }
-    }
-
-    // TODO implement
-    @Operation
-    @PostMapping("/sign-out")
-    fun invalidateSession(
-        @RequestBody jwtToken: String
-    ): ResponseEntity<ResponseWrapper<Any?>> {
-        return ResponseEntity.ok(ResponseWrapper("Not implemented yet", null))
     }
 }

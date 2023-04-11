@@ -10,7 +10,12 @@ import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamGameDetails
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamPriceOverview
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import org.springframework.stereotype.Component
+import java.text.ParseException
 import java.time.Duration
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
 import kotlin.math.min
 
 /**
@@ -28,6 +33,8 @@ class SteamDataUpdater(
     private val filter = "price_overview"
     private val countryCode = "CZ"
     private val objectMapper = jacksonObjectMapper()
+    private val formatterSimple = DateTimeFormatter.ofPattern("d MMM, yyyy")
+    private val formatterLess = DateTimeFormatter.ofPattern("d MMM")
 
     fun updateGamePrices() {
         val apps = steamGameListClient.getAllGames().appList.apps
@@ -45,7 +52,7 @@ class SteamDataUpdater(
                 }
                 start = end
                 end = min(end  + 700, apps.size - 1)
-//                simulatePause()
+                simulatePause()
             } catch (e: Exception) {
                 println("An error with message: ${e.message} at the ${end/700} iteration")
             }
@@ -78,7 +85,7 @@ class SteamDataUpdater(
         val gameName = apps.find { it.appId == appId }!!.name // should be fine right?
         val priceInt = steamPriceOverview.priceOverview.final ?: return
         val price = priceInt.toDouble() / 100
-        gameService.saveGamePrice(gameName, price, null, seller)
+        gameService.saveGamePrice(gameName, price, "https://store.steampowered.com/search/?term=${gameName}", seller)
     }
 
     private fun saveDetails(key: String, value: SteamGameDetailResponse, apps: List<SteamGame>) {
@@ -89,7 +96,17 @@ class SteamDataUpdater(
         val description =
             steamGameDetails.aboutTheGame?.replace(Regex("<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+>"), "")
         val image = steamGameDetails.headerImage
-        val releaseDate = steamGameDetails.releaseDate?.date
+        val releaseDateString = steamGameDetails.releaseDate?.date
+        var releaseDate: Date? = null
+        try {
+            if (releaseDateString != null) {
+                val localDate = LocalDate.parse(releaseDateString, formatterSimple)
+                releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+        } catch (e: ParseException) {
+            val localDate = LocalDate.parse(releaseDateString, formatterLess)
+            releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+        }
         val price: Double = if (steamGameDetails.isFree == true) {
             0.0
         } else {

@@ -29,22 +29,22 @@ class ScheduledGameUpdate(
     //    uncomment for testing methods
 //    @PostConstruct
     fun init() {
-        val steamDataRunnable = ThreadC { updateSteamData() }
-        val steamPricesRunnable = ThreadC { updateSteamPrices() }
+//        val steamDataRunnable = ThreadC { updateSteamData() }
+//        val steamPricesRunnable = ThreadC { updateSteamPrices() }
         val eaGameRunnable = ThreadC { updateEaGameData() }
         val humbleBundlePricesRunnable = ThreadC { updateHumbleBundleGamePrices() }
         val humbleBundleDataRunnable = ThreadC { updateHumbleBundleGameData() }
         // ------------------------------------ \\
-        val steamDataThread = Thread(steamDataRunnable)
-        val steamPricesThread = Thread(steamPricesRunnable)
+//        val steamDataThread = Thread(steamDataRunnable)
+//        val steamPricesThread = Thread(steamPricesRunnable)
         val eaGameThread = Thread(eaGameRunnable)
         val humbleBundlePricesThread = Thread(humbleBundlePricesRunnable)
         val humbleBundleDataThread = Thread(humbleBundleDataRunnable)
         // ------------------------------------ \\
-        steamDataThread.start()
-        logger.info("Starting thread Steam Data, running update script")
-        steamPricesThread.start()
-        logger.info("Starting thread Steam Prices, running update script")
+//        steamDataThread.start()
+//        logger.info("Starting thread Steam Data, running update script")
+//        steamPricesThread.start()
+//        logger.info("Starting thread Steam Prices, running update script")
         eaGameThread.start()
         logger.info("Starting thread EA, running update script")
         humbleBundlePricesThread.start()
@@ -53,7 +53,11 @@ class ScheduledGameUpdate(
         logger.info("Starting thread Humble Bundle Data, running update script")
     }
 
-    @Scheduled(cron = "@daily")
+    fun hbDataTest() {
+        updateHumbleBundleGameData()
+    }
+
+//    @Scheduled(cron = "@daily")
     fun updateEaGameData() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
@@ -68,7 +72,7 @@ class ScheduledGameUpdate(
         }
     }
 
-    @Scheduled(cron = "@daily")
+//    @Scheduled(cron = "@daily")
     fun updateHumbleBundleGamePrices() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
@@ -101,7 +105,7 @@ class ScheduledGameUpdate(
     }
 
 
-    @Scheduled(cron = "@daily")
+//    @Scheduled(cron = "@daily")
     fun updateSteamPrices() {
         try {
             steamDataUpdater.updateGamePrices()
@@ -126,5 +130,4 @@ class ScheduledGameUpdate(
         }
     }
 
-    // TODO TEST HB GAME PRICES SCRAPING -> TOOK ONLY minute and halfA
 }

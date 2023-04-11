@@ -6,6 +6,11 @@ import org.openqa.selenium.By
 import org.openqa.selenium.chrome.ChromeDriver
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.text.ParseException
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
 
 /**
  *
@@ -21,6 +26,9 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
     lateinit var eaGameList: String
 
     private val seller = Seller.EA_GAMES
+
+    private val formatterSimple = DateTimeFormatter.ofPattern("MMMM d, yyyy")
+    private val formatterComplex = DateTimeFormatter.ofPattern("MMMM d, yyyy h:mm a 'GMT'Z") // TODO test this
 
     override fun scrapeGamePrices(driver: ChromeDriver) {
         setCatalogWindow(driver)
@@ -43,7 +51,17 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
             return
         }
         val description = getGameDescription(driver)
-        val releaseDate = getReleaseDate(driver)
+        val releaseDateString = getReleaseDate(driver)
+        var releaseDate: Date? = null
+        try {
+            if (releaseDateString != null) {
+                val localDate = LocalDate.parse(releaseDateString, formatterSimple)
+                releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+            }
+        } catch (e: ParseException) {
+            val localDate = LocalDate.parse(releaseDateString, formatterComplex)
+            releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+        }
         val currentUrl = driver.currentUrl
         val price = getGamePrice(driver)
         if (price != null) {

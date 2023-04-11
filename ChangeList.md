@@ -3,8 +3,7 @@ TODOS:
 * change feignClient to requestline?
 * add try catch to scraper findelement
 * overall cleanup and fixes
-* change scraping to just get the catalog data with price every day and check for any difference in description/image and other data every week/month
-* move saving scrapped games to gameService
+* extract release date parsing
 
 Possible extensions:
 * add email to user for notifications
@@ -105,3 +104,9 @@ Change list 0.4.4
 * added logging
 * added try catch blocks to try to "skip" errors
 * prepared method that starts all the scheduled jobs in different threads 
+
+Change list 0.4.11
+* moved logout to user controller
+* changed release date to date from string
+* small adjustments to release date change
+* most of the changes needed for frontend made 

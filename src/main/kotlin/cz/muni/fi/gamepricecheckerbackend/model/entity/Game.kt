@@ -7,9 +7,11 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.DynamicUpdate
+import java.util.Date
 
 /**
  *
@@ -17,7 +19,7 @@ import org.hibernate.annotations.DynamicUpdate
  */
 @Entity
 @DynamicUpdate
-@Table(name = "games")
+@Table(name = "games", indexes = [Index(name = "name_index", columnList = "name", unique = true)])
 data class Game(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,13 +31,14 @@ data class Game(
     @Column(nullable = true)
     var imageUrl: String?,
     @Column(nullable = true)
-    var releaseDate: String?,
+    var releaseDate: Date?,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val externalLinks: Set<GameSeller>,
+    val gameSellers: Set<GameSeller>,
     @OneToMany(mappedBy = "game", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val history: List<PriceSnapshot>
 ) {
-    constructor(): this("", "", "", "", "", emptySet(), emptyList())
+    constructor(): this("", "", "", "", null, emptySet(), emptyList())
     constructor(name: String): this("", name, null, null, null, emptySet(), emptyList())
-    constructor(name: String, description: String?, imageUrl: String?, releaseDate: String?): this("", name, description, imageUrl, releaseDate, emptySet(), emptyList())
+    constructor(name: String, description: String?, imageUrl: String?, releaseDate: Date?): this("", name, description, imageUrl, releaseDate, emptySet(), emptyList())
+//    constructor(id: String, name: String, description: String?, imageUrl: String?, releaseDate: String?): this(id, name, description, imageUrl, releaseDate, emptySet(), emptyList())
 }
