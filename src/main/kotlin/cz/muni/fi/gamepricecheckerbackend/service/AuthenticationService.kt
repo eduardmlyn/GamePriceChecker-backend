@@ -8,6 +8,7 @@ import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -41,12 +42,16 @@ class AuthenticationService(
     }
 
     fun authenticate(authenticationRequest: AuthenticationRequest): AuthenticationResponse? {
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                authenticationRequest.username,
-                authenticationRequest.password
+        try {
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    authenticationRequest.username,
+                    authenticationRequest.password
+                )
             )
-        )
+        } catch (e: AuthenticationException) {
+            return null
+        }
         val user = userRepository.findUserByUserName(authenticationRequest.username)
         val jwtToken = user?.let { jwtService.generateToken(it) }
         return jwtToken?.let { AuthenticationResponse(it) }

@@ -109,4 +109,7 @@ Change list 0.4.11
 * moved logout to user controller
 * changed release date to date from string
 * small adjustments to release date change
-* most of the changes needed for frontend made 
+* most of the changes needed for frontend made
+
+Change list 0.4.11.2
+* added catching authentication error to pass null
