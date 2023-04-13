@@ -1,6 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.model.entity
 
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -36,16 +37,16 @@ data class User(
     val userName: String,
     @Column
     private val password: String,
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE])
     @JoinTable(
         name = "game_favorites",
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "game_id")]
     )
-    val favorites: List<Game>
+    val favorites: MutableList<Game>
 ) : UserDetails {
-    constructor() : this("", Role.USER, "", "", emptyList<Game>())
-    constructor(userName: String, password: String, role: Role) : this("", role, userName, password, emptyList())
+    constructor() : this("", Role.USER, "", "", mutableListOf())
+    constructor(userName: String, password: String, role: Role) : this("", role, userName, password, mutableListOf())
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf(SimpleGrantedAuthority(role.name))

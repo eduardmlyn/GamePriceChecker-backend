@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.controller
 
+import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.service.UserService
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
@@ -11,10 +12,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -27,14 +30,13 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @CrossOrigin
 @RequestMapping(value = ["/user"])
-class UserController(val userService: UserService, val jwtService: JwtService) {
+class UserController(val userService: UserService) {
     @Operation(summary = "Delete user", description = "Deletes user from system.")
     @DeleteMapping("/opt-out")
     fun deleteUser(
         @Parameter(description = "JWT of logged user", required = true) @RequestHeader(HttpHeaders.AUTHORIZATION) token: String
     ): ResponseEntity<ResponseWrapper<User?>> {
-        val userName = jwtService.extractUsername(token)
-        val user = userService.deleteUser(userName)
+        val user = userService.deleteUser()
 
         // TODO add exception check
         return ResponseEntity.ok(ResponseWrapper("Success", data = user))
@@ -52,7 +54,32 @@ class UserController(val userService: UserService, val jwtService: JwtService) {
         return ResponseEntity.ok(ResponseWrapper("Success", data = null))
     }
 
-    // TODO add changing password? -> might be needed email and more complications
+
+    // TODO add description
+    @Operation(summary = "(Un)Favorite game", description = "Adding/removing game from user's favorites")
+    @PostMapping("/favorite")
+    fun addGameToUser(
+        @Parameter(description = "Game Id", required = true) @RequestParam gameId: String
+    ): Boolean {
+        return userService.changeGameToUserRelation(gameId)
+    }
+
+    // TODO add description
+    @Operation()
+    @GetMapping("/favorites")
+    fun getUserFavorites(
+        @Parameter(description = "Page", required = false) @RequestParam page: Int?,
+        @Parameter(description = "Page size", required = true) @RequestParam pageSize: Int
+    ): ResponseEntity<ResponseWrapper<List<GameDTO>>> {
+        return ResponseEntity.ok(ResponseWrapper("", userService.getUserFavorites(page ?: 0, pageSize)))
+    }
+
+    // TODO add description
+    @Operation()
+    @GetMapping("/favorites/count")
+    fun getUserFavoritesCount(): ResponseEntity<ResponseWrapper<Int>> {
+        return ResponseEntity.ok(ResponseWrapper("Success", userService.getUserFavoriteCount()))
+    }
 
     // TODO implement
     @Operation

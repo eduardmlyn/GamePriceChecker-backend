@@ -52,6 +52,7 @@ class SecurityConfig(
             .and()
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .cors()
         return httpSecurity.build()
     }
 

@@ -23,4 +23,8 @@ interface GameRepository : JpaRepository<Game, String>, PagingAndSortingReposito
 
     @Query("select new kotlin.Pair(g, gs) from Game g join g.gameSellers gs where gs.seller = :seller")
     fun findGamesBySeller(@Param("seller") seller: Seller): List<Pair<Game, GameSeller>>
+
+//    fun getGamesByUsersId(userId: String)
+
+//    fun findGameByIdAndUsersId(gameId: String, userId: String): Game?
 }

@@ -62,12 +62,14 @@ class SteamDataUpdater(
     fun updateGameDetails() {
         val apps = steamGameListClient.getAllGames().appList.apps
         val appIds = apps.map { it.appId }
+        // TODO rework with games for seller call to repo
         appIds.forEach { currentAppId ->
             try {
                 val gameDetails = steamGameDetailClient.getGameDetails(listOf(currentAppId), countryCode, filter = null)
                 val key = gameDetails.keys.single()
                 val value = gameDetails[key]!!
                 saveDetails(key, value, apps)
+                simulatePause()
             } catch (e: Exception) {
                 println(e)
             }

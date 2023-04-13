@@ -30,27 +30,27 @@ class ScheduledGameUpdate(
 //    @PostConstruct
     fun init() {
 //        val steamDataRunnable = ThreadC { updateSteamData() }
-//        val steamPricesRunnable = ThreadC { updateSteamPrices() }
+        val steamPricesRunnable = ThreadC { updateSteamPrices() }
         val eaGameRunnable = ThreadC { updateEaGameData() }
         val humbleBundlePricesRunnable = ThreadC { updateHumbleBundleGamePrices() }
-        val humbleBundleDataRunnable = ThreadC { updateHumbleBundleGameData() }
+//        val humbleBundleDataRunnable = ThreadC { updateHumbleBundleGameData() }
         // ------------------------------------ \\
 //        val steamDataThread = Thread(steamDataRunnable)
-//        val steamPricesThread = Thread(steamPricesRunnable)
+        val steamPricesThread = Thread(steamPricesRunnable)
         val eaGameThread = Thread(eaGameRunnable)
         val humbleBundlePricesThread = Thread(humbleBundlePricesRunnable)
-        val humbleBundleDataThread = Thread(humbleBundleDataRunnable)
+//        val humbleBundleDataThread = Thread(humbleBundleDataRunnable)
         // ------------------------------------ \\
 //        steamDataThread.start()
 //        logger.info("Starting thread Steam Data, running update script")
-//        steamPricesThread.start()
-//        logger.info("Starting thread Steam Prices, running update script")
+        steamPricesThread.start()
+        logger.info("Starting thread Steam Prices, running update script")
         eaGameThread.start()
         logger.info("Starting thread EA, running update script")
         humbleBundlePricesThread.start()
         logger.info("Starting thread Humble Bundle Price, running update script")
-        humbleBundleDataThread.start()
-        logger.info("Starting thread Humble Bundle Data, running update script")
+//        humbleBundleDataThread.start()
+//        logger.info("Starting thread Humble Bundle Data, running update script")
     }
 
     fun hbDataTest() {
