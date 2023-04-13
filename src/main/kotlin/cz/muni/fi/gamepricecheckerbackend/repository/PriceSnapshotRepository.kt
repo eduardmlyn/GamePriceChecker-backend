@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
  *
  * @author Eduard Stefan Mlynarik
  */
-interface PriceSnapshotRepository: JpaRepository<PriceSnapshot, String> {
+interface PriceSnapshotRepository : JpaRepository<PriceSnapshot, String> {
     fun findPriceSnapshotsByGameId(gameId: String): List<PriceSnapshot>
 }

@@ -1,6 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.model.dto
 
-import java.util.*
+import java.util.Date
 
 /**
  *

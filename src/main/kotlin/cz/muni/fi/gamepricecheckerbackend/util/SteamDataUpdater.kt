@@ -9,6 +9,7 @@ import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamGameDetailResponse
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamGameDetails
 import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamPriceOverview
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
+import org.slf4j.Logger
 import org.springframework.stereotype.Component
 import java.text.ParseException
 import java.time.Duration
@@ -24,17 +25,18 @@ import kotlin.math.min
  */
 @Component
 class SteamDataUpdater(
-    val steamGameListClient: SteamGameListClient,
-    val steamGameDetailClient: SteamGameDetailClient,
-    val gameService: GameService
+    private val steamGameListClient: SteamGameListClient,
+    private val steamGameDetailClient: SteamGameDetailClient,
+    private val gameService: GameService,
+    private val dateParser: DateParser,
+    private val logger: Logger
 ) {
 
     private val seller = Seller.STEAM
     private val filter = "price_overview"
     private val countryCode = "CZ"
+    private val steamLinkBase = "https://store.steampowered.com/search/?term="
     private val objectMapper = jacksonObjectMapper()
-    private val formatterSimple = DateTimeFormatter.ofPattern("d MMM, yyyy")
-    private val formatterLess = DateTimeFormatter.ofPattern("d MMM")
 
     fun updateGamePrices() {
         val apps = steamGameListClient.getAllGames().appList.apps
@@ -44,25 +46,26 @@ class SteamDataUpdater(
         while (true) {
             try {
                 if (start >= apps.size - 1) return
-                println("Getting apps from $start to $end meaning ${end/700} iteration")
+                logger.info("Getting apps from $start to $end meaning ${end / 700} iteration")
                 val currentAppIds = appIds.subList(start, end)
                 val prices = steamGameDetailClient.getGameDetails(currentAppIds, countryCode, filter = filter)
                 prices.forEach { (key, value) ->
                     savePrice(key, value, apps)
                 }
                 start = end
-                end = min(end  + 700, apps.size - 1)
+                end = min(end + 700, apps.size - 1)
                 simulatePause()
             } catch (e: Exception) {
-                println("An error with message: ${e.message} at the ${end/700} iteration")
+                logger.error("An error with message: ${e.message} at the ${end / 700} iteration")
             }
         }
     }
 
     fun updateGameDetails() {
         val apps = steamGameListClient.getAllGames().appList.apps
-        val appIds = apps.map { it.appId }
-        // TODO rework with games for seller call to repo
+        val gamesToUpdate = gameService.getUpdatableGamesForSeller(seller).map { it.first.name }
+        val appIds = apps.filter { it.name in gamesToUpdate }.map { it.appId }
+
         appIds.forEach { currentAppId ->
             try {
                 val gameDetails = steamGameDetailClient.getGameDetails(listOf(currentAppId), countryCode, filter = null)
@@ -77,17 +80,17 @@ class SteamDataUpdater(
     }
 
     private fun simulatePause() {
-        Thread.sleep(Duration.ofSeconds(3))
+        Thread.sleep(Duration.ofSeconds(3).toMillis())
     }
 
     private fun savePrice(key: String, value: SteamGameDetailResponse, apps: List<SteamGame>) {
         val appId = checkSteamResponse(key, value) ?: return
         val jsonValue = objectMapper.writeValueAsString(value.data)
         val steamPriceOverview = objectMapper.readValue(jsonValue, SteamPriceOverview::class.java)
-        val gameName = apps.find { it.appId == appId }!!.name // should be fine right?
+        val gameName = apps.find { it.appId == appId }!!.name
         val priceInt = steamPriceOverview.priceOverview.final ?: return
         val price = priceInt.toDouble() / 100
-        gameService.saveGamePrice(gameName, price, "https://store.steampowered.com/search/?term=${gameName}", seller)
+        gameService.saveGamePrice(gameName, price, "$steamLinkBase$gameName", seller)
     }
 
     private fun saveDetails(key: String, value: SteamGameDetailResponse, apps: List<SteamGame>) {
@@ -99,16 +102,7 @@ class SteamDataUpdater(
             steamGameDetails.aboutTheGame?.replace(Regex("<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+>"), "")
         val image = steamGameDetails.headerImage
         val releaseDateString = steamGameDetails.releaseDate?.date
-        var releaseDate: Date? = null
-        try {
-            if (releaseDateString != null) {
-                val localDate = LocalDate.parse(releaseDateString, formatterSimple)
-                releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-        } catch (e: ParseException) {
-            val localDate = LocalDate.parse(releaseDateString, formatterLess)
-            releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        }
+        val releaseDate: Date? = dateParser.parseDate(releaseDateString)
         val price: Double = if (steamGameDetails.isFree == true) {
             0.0
         } else {

@@ -39,6 +39,7 @@ class GameService(
                 val games = gameRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy.value).ascending())).content
                 games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
             }
+
             Order.DESC -> {
                 val games = gameRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy.value).descending())).content
                 games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
@@ -48,21 +49,6 @@ class GameService(
 
     fun getGameDetailsById(gameId: String): GameDetailDTO? {
         val game = gameRepository.findGameById(gameId) ?: return null
-        return GameDetailDTO(
-            game.id,
-            game.name,
-            game.description,
-            game.imageUrl,
-            game.releaseDate,
-            getSellerLinksForGame(game.id),
-            getPriceSnapshotsForGame(game.id)
-        )
-    }
-
-    // TODO remove?
-    fun getGameDetailsByName(gameName: String): GameDetailDTO? {
-        val game = gameRepository.findGameByName(gameName) ?: return null
-
         return GameDetailDTO(
             game.id,
             game.name,
@@ -139,9 +125,10 @@ class GameService(
         gameLink: String?,
         sellerName: Seller
     ) {
-        var game = gameRepository.findGameByName(gameName)
+        val formattedName = gameName.trim()
+        var game = gameRepository.findGameByName(formattedName)
         if (game == null) {
-            game = Game(gameName)
+            game = Game(formattedName)
             game = gameRepository.save(game)
         }
         val gameSeller = gameSellerRepository.findGameSellerByGameIdAndSeller(game.id, sellerName)

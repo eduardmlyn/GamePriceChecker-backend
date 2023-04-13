@@ -1,6 +1,5 @@
 package cz.muni.fi.gamepricecheckerbackend.model.steam
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 /**

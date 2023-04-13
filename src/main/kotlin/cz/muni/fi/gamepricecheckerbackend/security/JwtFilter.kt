@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.security
 
+import cz.muni.fi.gamepricecheckerbackend.service.BlackListService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -10,16 +11,18 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import kotlin.jvm.Throws
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
 @Component
-class JwtFilter(val jwtService: JwtService, val userDetailsService: UserDetailsService): OncePerRequestFilter() {
+class JwtFilter(
+    private val jwtService: JwtService,
+    private val userDetailsService: UserDetailsService,
+    private val blackListService: BlackListService
+) : OncePerRequestFilter() {
 
-    // add throws servletExc/ioexc
     @Throws(ServletException::class)
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -27,18 +30,13 @@ class JwtFilter(val jwtService: JwtService, val userDetailsService: UserDetailsS
         filterChain: FilterChain
     ) {
         val authHeader = request.getHeader("Authorization")
-        println(request.headerNames.toList())
-        println(request.contextPath)
-        println(authHeader)
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || blackListService.isBlackListed(authHeader)) {
             filterChain.doFilter(request, response)
             return
         }
         val jwtToken = authHeader.substring(7)
         val username = jwtService.extractUsername(jwtToken)
-        println(username)
-        // is username != null check needed?
-        if (username != null && SecurityContextHolder.getContext().authentication == null) {
+        if (SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userDetailsService.loadUserByUsername(username)
             if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 val authToken = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)

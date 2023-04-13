@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import kotlin.jvm.Throws
 
 /**
  * Configuration of security filtering.
@@ -19,8 +18,8 @@ import kotlin.jvm.Throws
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    val authenticationProvider: AuthenticationProvider,
-    val jwtTokenFilter: JwtFilter
+    private val authenticationProvider: AuthenticationProvider,
+    private val jwtTokenFilter: JwtFilter
 ) {
 
     @Throws(Exception::class)
@@ -29,6 +28,8 @@ class SecurityConfig(
         httpSecurity
             .csrf()
             .disable()
+            .cors()
+            .and()
             .authorizeHttpRequests()
             .requestMatchers("/swagger-ui/**")
             .permitAll()
@@ -52,7 +53,6 @@ class SecurityConfig(
             .and()
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .cors()
         return httpSecurity.build()
     }
 

@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin
 @RequestMapping(value = ["/game"])
 class GameController(
-    val gameService: GameService,
-    val scheduledGameUpdate: ScheduledGameUpdate
+    private val gameService: GameService,
+    private val scheduledGameUpdate: ScheduledGameUpdate
 ) {
 
     @Operation(summary = "Get game details", description = "Returns details of game.")

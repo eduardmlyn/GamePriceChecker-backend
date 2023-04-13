@@ -2,10 +2,13 @@ package cz.muni.fi.gamepricecheckerbackend.util.scrapper
 
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
+import cz.muni.fi.gamepricecheckerbackend.util.DateParser
 import org.openqa.selenium.By
 import org.openqa.selenium.chrome.ChromeDriver
+import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.lang.Exception
 import java.text.ParseException
 import java.time.LocalDate
 import java.time.ZoneId
@@ -18,7 +21,7 @@ import java.util.Date
  */
 // TODO add webdriverWaits
 @Service
-class EAScrapper(val gameService: GameService) : AbstractScrapper() {
+class EAScrapper(private val gameService: GameService, private val logger: Logger, private val dateParser: DateParser) : AbstractScrapper() {
     @Value(value = "\${app.ea-games.base.url}")
     lateinit var eaBaseUrl: String
 
@@ -27,18 +30,20 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
 
     private val seller = Seller.EA_GAMES
 
-    private val formatterSimple = DateTimeFormatter.ofPattern("MMMM d, yyyy")
-    private val formatterComplex = DateTimeFormatter.ofPattern("MMMM d, yyyy h:mm a 'GMT'Z") // TODO test this
 
     override fun scrapeGamePrices(driver: ChromeDriver) {
         setCatalogWindow(driver)
         simulateUserBehaviour()
         val allLinks = getAllCatalogLinks(driver)
-        allLinks.forEach { // TODO rewrite?
-            if (goToDetailPageIfAble(driver, it)) {
-                extractAndSaveGameData(driver)
-            } else {
-                println("Skipping game...") // TODO change to logging
+        allLinks.forEach {
+            try {
+                if (goToDetailPageIfAble(driver, it)) {
+                    extractAndSaveGameData(driver)
+                } else {
+                    logger.info("Skipping game... $it")
+                }
+            } catch (e: Exception) {
+                logger.error("Error occurred with $it")
             }
         }
     }
@@ -47,25 +52,16 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
         simulateUserBehaviour()
         val name = getGameName(driver)
         if (name == null) {
-            println("Skipping game... cannot find game name") // TODO change to log
+            logger.info("Skipping game... cannot find game name") // TODO change to log
             return
         }
         val description = getGameDescription(driver)
         val releaseDateString = getReleaseDate(driver)
-        var releaseDate: Date? = null
-        try {
-            if (releaseDateString != null) {
-                val localDate = LocalDate.parse(releaseDateString, formatterSimple)
-                releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            }
-        } catch (e: ParseException) {
-            val localDate = LocalDate.parse(releaseDateString, formatterComplex)
-            releaseDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        }
+        val releaseDate: Date? = dateParser.parseDate(releaseDateString)
         val currentUrl = driver.currentUrl
         val price = getGamePrice(driver)
         if (price != null) {
-            println("Saving object to database")
+            logger.info("Saving object $name to database")
             gameService.saveGame(name, price, description, null, releaseDate, currentUrl, seller)
         }
     }
@@ -109,11 +105,7 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
     }
 
     private fun goToDetailPageIfAble(driver: ChromeDriver, path: String): Boolean {
-//        try { // TODO is this needed everywhere to catch non-accessible sites?
-            driver.get(path)
-//        } catch (e: Exception) {
-//            return false
-//        }
+        driver.get(path)
         simulateUserBehaviour()
         if (hasAboutGame(driver)) return true
         return changeToPcOption(driver)
@@ -142,7 +134,7 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
             if (priceString == null || priceString == "") return null
             return priceString.replace(Regex("[^\\d.]"), "").toDoubleOrNull()
         }
-        val priceDisplayElements =driver.findElements(By.cssSelector("ea-hybrid-price-display"))
+        val priceDisplayElements = driver.findElements(By.cssSelector("ea-hybrid-price-display"))
         if (priceDisplayElements.isEmpty()) return null // -> might indicate the game is free
         val priceDisplayShadowRoot = priceDisplayElements[0].shadowRoot
         val oldGamePrice = priceDisplayShadowRoot.findElements(By.cssSelector("div[class='price-text']"))
@@ -161,13 +153,6 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
         priceString = priceString.replace(',', '.')
         println("price string: $priceString")
         return priceString.replace(Regex("[^\\d.]"), "").toDoubleOrNull()
-    }
-
-    // TODO get Image
-    private fun getImage(driver: ChromeDriver): String? {
-//        https://media.contentapi.ea.com/content/dam/gin/images/2017/01/ea-header-small-gneric-game-4k.jpg.adapt.crop1x1.767p.jpg
-//        https://media.contentapi.ea.com/content/dam/gin/images/2017/01/ea-header-small-gneric-game-4k.jpg.adapt.crop1x1.767p.jpg
-        return null
     }
 
     private fun getReleaseDate(driver: ChromeDriver): String? {
@@ -189,7 +174,7 @@ class EAScrapper(val gameService: GameService) : AbstractScrapper() {
         driver.get(pcOptionUrl)
         simulateUserBehaviour()
         val title = driver.title
-        if (title.contains("404")) return false // add check for 500?
+        if (title.contains("404") || title.contains("500")) return false
         return true
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
  * @author Eduard Stefan Mlynarik
  */
 @Configuration
-class AppConfiguration(val userRepository: UserRepository) {
+class AppConfiguration(private val userRepository: UserRepository) {
 
     @Bean
     fun userDetailsService(): UserDetailsService {

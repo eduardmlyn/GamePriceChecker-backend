@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import java.security.Key
-import java.util.*
+import java.util.Date
 import java.util.function.Function
 
 @Service
@@ -18,6 +18,7 @@ class JwtService {
 
     @Value(value = "\${app.jwt.secretKey}")
     lateinit var secretKey: String
+
     @Value(value = "\${app.jwt.expirationMs}")
     lateinit var expirationMs: Number
 

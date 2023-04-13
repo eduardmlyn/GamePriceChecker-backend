@@ -28,7 +28,7 @@ abstract class AbstractScrapper: Scrapper {
 
     protected fun simulateUserBehaviour() {
         val randomWaitTime = Random.nextLong(2, 4)
-        Thread.sleep(Duration.ofSeconds(randomWaitTime))
+        Thread.sleep(Duration.ofSeconds(randomWaitTime).toMillis())
     }
 
     protected fun clickButton(driver: ChromeDriver, element: WebElement) {

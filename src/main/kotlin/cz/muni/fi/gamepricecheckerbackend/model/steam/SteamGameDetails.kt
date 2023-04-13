@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SteamGameDetails(
-    val name: String?, // TODO remove?
+    val name: String?,
     @JsonAlias("is_free", "isFree")
     val isFree: Boolean?,
     @JsonAlias("about_the_game", "aboutTheGame")

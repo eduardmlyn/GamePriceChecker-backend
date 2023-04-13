@@ -13,8 +13,8 @@ import org.springframework.data.repository.query.Param
  * @author Eduard Stefan Mlynarik
  */
 interface GameRepository : JpaRepository<Game, String>, PagingAndSortingRepository<Game, String> {
-    @Query("select g from Game g where lower(g.name) = lower(?1) ")
-    fun findGameByName(name: String): Game?
+    @Query("select g from Game g where lower(g.name) = lower(:name) ")
+    fun findGameByName(@Param("name") name: String): Game?
     fun findGameById(id: String): Game?
 
 
@@ -23,8 +23,4 @@ interface GameRepository : JpaRepository<Game, String>, PagingAndSortingReposito
 
     @Query("select new kotlin.Pair(g, gs) from Game g join g.gameSellers gs where gs.seller = :seller")
     fun findGamesBySeller(@Param("seller") seller: Seller): List<Pair<Game, GameSeller>>
-
-//    fun getGamesByUsersId(userId: String)
-
-//    fun findGameByIdAndUsersId(gameId: String, userId: String): Game?
 }

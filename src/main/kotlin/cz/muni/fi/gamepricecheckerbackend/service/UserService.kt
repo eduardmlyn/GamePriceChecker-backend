@@ -17,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
     private val userRepository: UserRepository,
     private val gameRepository: GameRepository,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val blackListService: BlackListService
 ) {
     fun findByUsername(username: String): User? {
         return userRepository.findUserByUserName(username)
@@ -30,10 +31,11 @@ class UserService(
     }
 
     @Transactional
-    fun editUsername(username: String) {
+    fun editUsername(username: String): User? {
         val currentUserName = jwtService.getUserName()
-        val user = findByUsername(currentUserName) ?: return
-        userRepository.changeUsername(username, user.id)
+        val user = userRepository.findUserByUserName(currentUserName) ?: return null
+        if (userRepository.findUserByUserName(username) != null) return null
+        return userRepository.changeUsername(username, user.id)
     }
 
 
@@ -64,5 +66,9 @@ class UserService(
         val username = jwtService.getUserName()
         val user = userRepository.findUserByUserName(username) ?: return 0
         return user.favorites.size
+    }
+
+    fun logout() {
+        jwtService.t
     }
 }

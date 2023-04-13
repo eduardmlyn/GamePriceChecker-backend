@@ -1,9 +1,9 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
-import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
-import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
+import cz.muni.fi.gamepricecheckerbackend.model.entity.User
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
@@ -20,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class AuthenticationService(
-    val userRepository: UserRepository,
-    val passwordEncoder: PasswordEncoder,
-    val jwtService: JwtService,
-    val authenticationManager: AuthenticationManager
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtService: JwtService,
+    private val authenticationManager: AuthenticationManager
 ) {
 
     @Transactional

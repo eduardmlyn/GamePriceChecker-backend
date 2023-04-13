@@ -7,4 +7,4 @@ import org.springframework.context.ApplicationEvent
  *
  * @author Eduard Stefan Mlynarik
  */
-class TaskDoneEvent(val seller: Seller): ApplicationEvent(seller)
+class TaskDoneEvent(val seller: Seller) : ApplicationEvent(seller)

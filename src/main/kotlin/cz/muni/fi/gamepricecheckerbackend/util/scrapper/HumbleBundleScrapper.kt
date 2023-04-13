@@ -15,9 +15,8 @@ import org.springframework.stereotype.Service
  *
  * @author Eduard Stefan Mlynarik
  */
-// TODO add catching exceptions and resolve them
 @Service
-class HumbleBundleScrapper(val gameService: GameService, val logger: Logger) : AbstractScrapper() {
+class HumbleBundleScrapper(private val gameService: GameService, private val logger: Logger) : AbstractScrapper() {
     @Value(value = "\${app.humble-bundle.base.url}")
     lateinit var hbBaseUrl: String
 
@@ -37,7 +36,6 @@ class HumbleBundleScrapper(val gameService: GameService, val logger: Logger) : A
                     extractAndSaveGameDataFromElement(driver, it)
                 } catch (e: Exception) {
                     logger.error(e.message)
-                    println(e)
                 }
             }
             if (!goToNextPageIfAble(driver)) return
@@ -54,7 +52,6 @@ class HumbleBundleScrapper(val gameService: GameService, val logger: Logger) : A
                 gameService.updateGameInformation(it.first, description, imageUrl, null)
             } catch (e: Exception) {
                 logger.error(e.message)
-                println(e)
             }
         }
     }
@@ -122,13 +119,17 @@ class HumbleBundleScrapper(val gameService: GameService, val logger: Logger) : A
             By.cssSelector("a[class*='entity-link js-entity-link']")
         ).getAttribute("href")
         val comingSoonElement = element.findElements(By.cssSelector("span[class*='coming-soon']"))
-        if (comingSoonElement.size != 0) return // TODO add log for skipping game with the name of the game
-        val gamePriceString = element.findElement(By.cssSelector("span[class='price']")).text
         val gameName = element.findElement(By.cssSelector("span[class='entity-title']")).text
+        if (comingSoonElement.size != 0) {
+            logger.info("Skipping game $gameName scraping because of coming soon")
+            return
+        }
+        val gamePriceString = element.findElement(By.cssSelector("span[class='price']")).text
         val gamePrice = gamePriceString.replace(Regex("[^\\d.]"), "").toDoubleOrNull()
-        // TODO add logging of not saving a game
         if (gamePrice != null) {
             gameService.saveGamePrice(gameName, gamePrice, gameDetailLink, seller)
+            return
         }
+        logger.info("Skipping game $gameName because of no price")
     }
 }

@@ -16,6 +16,7 @@ import java.time.Instant
 class TaskDoneEventListener(val gameService: GameService) {
     private val sellers: MutableSet<Seller> = mutableSetOf()
     private val allSellers: Set<Seller> = mutableSetOf(Seller.STEAM, Seller.EA_GAMES, Seller.HUMBLE_BUNDLE)
+
     @EventListener
     fun handleTaskDone(event: TaskDoneEvent) {
         sellers.add(event.seller)

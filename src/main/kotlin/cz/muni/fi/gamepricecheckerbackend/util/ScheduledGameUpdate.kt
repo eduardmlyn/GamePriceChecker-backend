@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component
  */
 @Component
 class ScheduledGameUpdate(
-    val humbleBundleScrapper: HumbleBundleScrapper,
-    val eaScrapper: EAScrapper,
-    val chromeDriverFactory: ChromeDriverFactory,
-    val steamDataUpdater: SteamDataUpdater,
-    val taskDoneEventPublisher: TaskDoneEventPublisher,
-    val logger: Logger
+    private val humbleBundleScrapper: HumbleBundleScrapper,
+    private val eaScrapper: EAScrapper,
+    private val chromeDriverFactory: ChromeDriverFactory,
+    private val steamDataUpdater: SteamDataUpdater,
+    private val taskDoneEventPublisher: TaskDoneEventPublisher,
+    private val logger: Logger
 ) {
     class ThreadC(val func: () -> Unit) : Runnable {
         override fun run() {
@@ -53,11 +53,7 @@ class ScheduledGameUpdate(
 //        logger.info("Starting thread Humble Bundle Data, running update script")
     }
 
-    fun hbDataTest() {
-        updateHumbleBundleGameData()
-    }
-
-//    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "@daily")
     fun updateEaGameData() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
@@ -72,7 +68,7 @@ class ScheduledGameUpdate(
         }
     }
 
-//    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "@daily")
     fun updateHumbleBundleGamePrices() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
@@ -105,7 +101,7 @@ class ScheduledGameUpdate(
     }
 
 
-//    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "@daily")
     fun updateSteamPrices() {
         try {
             steamDataUpdater.updateGamePrices()

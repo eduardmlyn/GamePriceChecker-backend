@@ -2,18 +2,14 @@ package cz.muni.fi.gamepricecheckerbackend.controller
 
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
-import cz.muni.fi.gamepricecheckerbackend.model.entity.User
-import cz.muni.fi.gamepricecheckerbackend.service.AuthenticationService
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
-import cz.muni.fi.gamepricecheckerbackend.service.UserService
+import cz.muni.fi.gamepricecheckerbackend.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -24,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @CrossOrigin
 @RequestMapping(value = ["/auth"])
-class AuthenticationController(private val authenticationService: AuthenticationService, private val userService: UserService) {
+class AuthenticationController(private val authenticationService: AuthenticationService) {
 
     @Operation(
         summary = "Sign up new account",
@@ -51,11 +47,5 @@ class AuthenticationController(private val authenticationService: Authentication
         } else {
             ResponseEntity.ok(ResponseWrapper("Successfully signed in", authStatus))
         }
-    }
-
-    // TEST ENDPOINT
-    @GetMapping("test")
-    fun test(@RequestParam name: String): User? {
-        return userService.findByUsername(name)
     }
 }
