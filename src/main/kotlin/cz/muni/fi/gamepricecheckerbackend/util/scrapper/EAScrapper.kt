@@ -8,20 +8,18 @@ import org.openqa.selenium.chrome.ChromeDriver
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.lang.Exception
-import java.text.ParseException
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
 
 /**
  *
  * @author Eduard Stefan Mlynarik
  */
-// TODO add webdriverWaits
 @Service
-class EAScrapper(private val gameService: GameService, private val logger: Logger, private val dateParser: DateParser) : AbstractScrapper() {
+class EAScrapper(
+    private val gameService: GameService,
+    private val logger: Logger,
+    private val dateParser: DateParser
+) : AbstractScrapper() {
     @Value(value = "\${app.ea-games.base.url}")
     lateinit var eaBaseUrl: String
 
@@ -52,7 +50,7 @@ class EAScrapper(private val gameService: GameService, private val logger: Logge
         simulateUserBehaviour()
         val name = getGameName(driver)
         if (name == null) {
-            logger.info("Skipping game... cannot find game name") // TODO change to log
+            logger.info("Skipping game... cannot find game name")
             return
         }
         val description = getGameDescription(driver)
@@ -95,7 +93,7 @@ class EAScrapper(private val gameService: GameService, private val logger: Logge
         )
         val currentPage = paginationElement.getAttribute("current-page").toIntOrNull()
         val totalPages = paginationElement.getAttribute("total-pages").toIntOrNull()
-        if (currentPage == null || totalPages == null) return false // TODO fix this
+        if (currentPage == null || totalPages == null) return false
         if (currentPage >= totalPages) return false
         val paginationShadowRoot = paginationElement.shadowRoot
         val nextButton = paginationShadowRoot.findElement(By.cssSelector("span[data-page-target='next']"))

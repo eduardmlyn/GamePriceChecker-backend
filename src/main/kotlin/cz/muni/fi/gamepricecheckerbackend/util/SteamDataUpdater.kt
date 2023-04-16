@@ -11,12 +11,8 @@ import cz.muni.fi.gamepricecheckerbackend.model.steam.SteamPriceOverview
 import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import org.slf4j.Logger
 import org.springframework.stereotype.Component
-import java.text.ParseException
 import java.time.Duration
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.*
 import kotlin.math.min
 
 /**
@@ -102,7 +98,11 @@ class SteamDataUpdater(
             steamGameDetails.aboutTheGame?.replace(Regex("<(?:\"[^\"]*\"['\"]*|'[^']*'['\"]*|[^'\">])+>"), "")
         val image = steamGameDetails.headerImage
         val releaseDateString = steamGameDetails.releaseDate?.date
-        val releaseDate: Date? = dateParser.parseDate(releaseDateString)
+        val releaseDate: Date? = if (steamGameDetails.releaseDate != null && steamGameDetails.releaseDate.comingSoon) {
+            null
+        } else {
+            dateParser.parseDate(releaseDateString)
+        }
         val price: Double = if (steamGameDetails.isFree == true) {
             0.0
         } else {

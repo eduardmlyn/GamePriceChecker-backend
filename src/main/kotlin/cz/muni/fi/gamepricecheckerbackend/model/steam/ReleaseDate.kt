@@ -8,6 +8,6 @@ import com.fasterxml.jackson.annotation.JsonAlias
  */
 data class ReleaseDate(
     @JsonAlias("coming_soon", "comingSoon")
-    val comingSoon: String,
+    val comingSoon: Boolean,
     val date: String
 )

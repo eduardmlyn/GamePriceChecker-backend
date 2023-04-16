@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
+import org.slf4j.Logger
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Duration
@@ -9,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 @Service
-class BlackListService {
+class BlackListService(private val logger: Logger) {
 
     private val blacklist = ConcurrentHashMap<String, Instant>()
     private val lock = ReentrantLock()
@@ -29,6 +30,7 @@ class BlackListService {
     @Scheduled(cron = "@hourly")
     fun removeExpiredTokens() {
         lock.withLock {
+            logger.info("Removing blacklisted expired tokens")
             val now = Instant.now()
             blacklist.entries.removeIf { it.value.isBefore(now) }
         }

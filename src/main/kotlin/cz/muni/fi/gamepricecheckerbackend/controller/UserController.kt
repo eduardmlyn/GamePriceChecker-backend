@@ -1,9 +1,8 @@
 package cz.muni.fi.gamepricecheckerbackend.controller
 
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
-import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
-import cz.muni.fi.gamepricecheckerbackend.service.BlackListService
 import cz.muni.fi.gamepricecheckerbackend.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -24,39 +24,42 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @author Eduard Stefan Mlynarik
  */
-@Tag(name = "User", description = "Provides API for User")
+@Tag(name = "User", description = "Provides API for User, additional access is needed")
 @RestController
 @CrossOrigin
 @RequestMapping(value = ["/user"])
 class UserController(private val userService: UserService) {
     @Operation(summary = "Delete user", description = "Deletes user from system.")
     @DeleteMapping("/opt-out")
-    fun deleteUser(): ResponseEntity<ResponseWrapper<User?>> {
-        val user = userService.deleteUser() ?: return ResponseEntity.status(404).body(ResponseWrapper("User not found", null))
+    fun deleteUser(): ResponseEntity<ResponseWrapper<Boolean>> {
+        userService.deleteUser() ?: return ResponseEntity.status(404).body(ResponseWrapper("User not found", false))
 
-        return ResponseEntity.ok(ResponseWrapper("Success", user))
+        return ResponseEntity.ok(ResponseWrapper("Success", true))
     }
 
     @Operation(summary = "Update user's username", description = "Updates user's username if valid.")
     @PutMapping("/edit-username")
     fun editUserUsername(
-        @Parameter(description = "New username", required = true) username: String
-    ): ResponseEntity<ResponseWrapper<Boolean>> {
-        // TODO redo
-        userService.editUsername(username)
-            ?: return ResponseEntity.badRequest().body(ResponseWrapper("User not found/username already in use", false))
-        return ResponseEntity.ok(ResponseWrapper("Success", true))
+        @Parameter(description = "New username", required = true) @RequestParam username: String,
+        @Parameter(
+            description = "JWT of logged in user",
+            required = true
+        ) @RequestHeader(name = "Authorization") token: String
+    ): ResponseEntity<ResponseWrapper<AuthenticationResponse?>> {
+        val renewedToken = userService.editUsername(username, token)
+            ?: return ResponseEntity.badRequest().body(ResponseWrapper("User not found/username already in use", null))
+
+        return ResponseEntity.ok(ResponseWrapper("Success", renewedToken))
     }
 
     @Operation(summary = "(Un)Favorite game", description = "Adding/removing game from user's favorites")
     @PostMapping("/favorite")
     fun addGameToUser(
         @Parameter(description = "Game Id", required = true) @RequestParam gameId: String
-    ): Boolean {
-        return userService.changeGameToUserRelation(gameId)
+    ): ResponseEntity<ResponseWrapper<Boolean>> {
+        return ResponseEntity.ok(ResponseWrapper("Success", userService.changeGameToUserRelation(gameId)))
     }
 
-    // TODO add description
     @Operation(summary = "Get favorite games", description = "Returns page of user's favorite games")
     @GetMapping("/favorites")
     fun getUserFavorites(
@@ -74,8 +77,13 @@ class UserController(private val userService: UserService) {
 
     @Operation
     @PostMapping("/logout")
-    fun invalidateSession(): ResponseEntity<ResponseWrapper<Boolean>> {
-        blackListService.addToBlackList()
+    fun invalidateSession(
+        @Parameter(
+            description = "JWT of logged in user",
+            required = true
+        ) @RequestHeader(name = "Authorization") token: String
+    ): ResponseEntity<ResponseWrapper<Boolean>> {
+        userService.logout(token)
         return ResponseEntity.ok(ResponseWrapper("Successfully logged out", true))
     }
 }

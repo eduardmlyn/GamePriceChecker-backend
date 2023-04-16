@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam
  * Steam Feign client for getting all games
  * they sell on their store.
  *
+ * @see <a href="https://partner.steamgames.com/doc/webapi/ISteamApps">Detailed documentation</a>
+ *
  * @author Eduard Stefan Mlynarik
  */
 @FeignClient(name = "SteamListAPI", url = "\${app.steam-api.game-list.url}")
@@ -21,6 +23,8 @@ interface SteamGameListClient {
 
 /**
  * Steam Feign client for getting details of a game.
+ *
+ * @see <a href="https://wiki.teamfortress.com/wiki/User:RJackson/StorefrontAPI">Detailed documentation</a>
  *
  * @author Eduard Stefan Mlynarik
  */

@@ -36,8 +36,8 @@ class AuthenticationService(
             password = passwordEncoder.encode(userRequest.password),
             role = Role.USER
         )
-        userRepository.save(user)
-        val jwtToken = jwtService.generateToken(user)
+        val savedUser = userRepository.save(user)
+        val jwtToken = jwtService.generateToken(savedUser)
         return AuthenticationResponse(jwtToken)
     }
 
@@ -52,12 +52,8 @@ class AuthenticationService(
         } catch (e: AuthenticationException) {
             return null
         }
-        val user = userRepository.findUserByUserName(authenticationRequest.username)
-        val jwtToken = user?.let { jwtService.generateToken(it) }
-        return jwtToken?.let { AuthenticationResponse(it) }
-    }
-
-    fun invalidate(jwtToken: String) {
-        TODO()
+        val user = userRepository.findUserByUserName(authenticationRequest.username) ?: return null
+        val jwtToken = jwtService.generateToken(user)
+        return AuthenticationResponse(jwtToken)
     }
 }

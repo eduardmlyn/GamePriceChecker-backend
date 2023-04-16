@@ -33,18 +33,17 @@ class GameService(
 ) {
 
     fun getGames(page: Int, pageSize: Int, sortBy: SortBy, order: Order): List<GameDTO> {
-        println(sortBy.value)
-        return when (order) {
+        val sort = when (order) {
             Order.ASC -> {
-                val games = gameRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy.value).ascending())).content
-                games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
+                Sort.by(sortBy.value).ascending()
             }
 
             Order.DESC -> {
-                val games = gameRepository.findAll(PageRequest.of(page, pageSize, Sort.by(sortBy.value).descending())).content
-                games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
+                Sort.by(sortBy.value).descending()
             }
         }
+        val games = gameRepository.findAll(PageRequest.of(page, pageSize, sort)).content
+        return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
     }
 
     fun getGameDetailsById(gameId: String): GameDetailDTO? {
@@ -92,9 +91,10 @@ class GameService(
         gameLink: String?,
         sellerName: Seller
     ) {
-        val game = gameRepository.findGameByName(gameName)
+        val formattedName = gameName.trim()
+        val game = gameRepository.findGameByName(formattedName)
         if (game == null) {
-            val newGame = Game(gameName, gameDescription, gameImage, gameRelease)
+            val newGame = Game(formattedName, gameDescription, gameImage, gameRelease)
             val savedGame = gameRepository.save(newGame)
             val newGameSeller = GameSeller(gameLink, gamePrice, sellerName, savedGame)
             gameSellerRepository.save(newGameSeller)

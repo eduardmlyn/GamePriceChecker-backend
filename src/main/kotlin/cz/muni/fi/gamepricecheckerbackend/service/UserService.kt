@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
+import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
@@ -25,17 +26,22 @@ class UserService(
     }
 
     @Transactional
-    fun deleteUser(): User? {
+    fun deleteUser(): Unit? {
         val username = jwtService.getUserName()
-        return userRepository.deleteUserByUserName(username)
+        if (userRepository.deleteUserByUserName(username) > 0) return Unit
+        return null
     }
 
     @Transactional
-    fun editUsername(username: String): User? {
+    fun editUsername(username: String, token: String): AuthenticationResponse? {
         val currentUserName = jwtService.getUserName()
         val user = userRepository.findUserByUserName(currentUserName) ?: return null
         if (userRepository.findUserByUserName(username) != null) return null
-        return userRepository.changeUsername(username, user.id)
+        user.userName = username
+        userRepository.save(user)
+        blackListService.addToBlackList(token)
+        val jwtToken = jwtService.generateToken(user)
+        return AuthenticationResponse(jwtToken)
     }
 
 
@@ -68,7 +74,7 @@ class UserService(
         return user.favorites.size
     }
 
-    fun logout() {
-        jwtService.t
+    fun logout(token: String) {
+        blackListService.addToBlackList(token)
     }
 }

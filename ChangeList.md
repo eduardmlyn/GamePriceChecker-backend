@@ -113,3 +113,18 @@ Change list 0.4.11
 
 Change list 0.4.11.2
 * added catching authentication error to pass null
+
+Change list 0.4.13
+* added cors option 
+* modified and implemented methods for user
+* slightly changed entities
+
+Change list 0.4.13.2
+* refactoring and styling
+* added jwt blacklisting
+* moved date parsing to class
+
+Change list 0.4.16
+* refactoring
+* added more logging
+* implemented logout

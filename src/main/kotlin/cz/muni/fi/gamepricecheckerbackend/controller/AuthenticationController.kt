@@ -5,6 +5,7 @@ import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRes
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
 import cz.muni.fi.gamepricecheckerbackend.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @author Eduard Stefan Mlynarik
  */
+@Tag(name = "Auth", description = "Provides Api for getting access to the system's secured endpoints")
 @RestController
 @CrossOrigin
 @RequestMapping(value = ["/auth"])

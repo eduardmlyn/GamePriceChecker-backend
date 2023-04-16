@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.Table
+import org.hibernate.annotations.DynamicUpdate
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -23,8 +24,8 @@ import org.springframework.security.core.userdetails.UserDetails
  *
  * @author Eduard Stefan Mlynarik
  */
-// TODO add Dynamic update and change to var?
 @Entity
+@DynamicUpdate
 @Table(name = "users")
 data class User(
     @Id
@@ -34,7 +35,7 @@ data class User(
     @Column
     val role: Role,
     @Column(name = "userName", unique = true)
-    val userName: String,
+    var userName: String,
     @Column
     private val password: String,
     @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE])
