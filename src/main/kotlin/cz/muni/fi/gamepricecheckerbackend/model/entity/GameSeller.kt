@@ -1,6 +1,7 @@
 package cz.muni.fi.gamepricecheckerbackend.model.entity
 
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller.EA_GAMES
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -33,6 +34,7 @@ data class GameSeller(
     @JoinColumn(name = "game_id")
     val game: Game
 ) {
+    constructor(): this("", null, 0.0, EA_GAMES, Game())
     constructor(seller: Seller, game: Game) : this("", null, 0.0, seller, game)
     constructor(link: String?, price: Double, seller: Seller, game: Game) : this("", link, price, seller, game)
 }

@@ -128,3 +128,7 @@ Change list 0.4.16
 * refactoring
 * added more logging
 * implemented logout
+
+Change list 0.4.17
+* fixed bug when saving game seller entity
+* fixed bug with catching parsing exception in date parser

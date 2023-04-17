@@ -2,10 +2,12 @@ package cz.muni.fi.gamepricecheckerbackend.util
 
 import org.slf4j.Logger
 import org.springframework.stereotype.Component
+import java.lang.Exception
 import java.text.ParseException
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 
 
@@ -30,9 +32,18 @@ class DateParser(private val logger: Logger) {
         return try {
             val localDate = LocalDate.parse(releaseDate, formatter)
             Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-        } catch (e: ParseException) {
-            logger.info("Could not parse with $formatter")
-            null
+        } catch (e: Exception) {
+            when (e) {
+                is ParseException,
+                is DateTimeParseException -> {
+                    logger.info("Could not parse with $formatter")
+                    null
+                }
+                else -> {
+                    logger.error("There has been an unknown error: ${e.message}")
+                    null
+                }
+            }
         }
     }
 }

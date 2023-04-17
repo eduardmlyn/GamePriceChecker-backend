@@ -41,7 +41,7 @@ class EAScrapper(
                     logger.info("Skipping game... $it")
                 }
             } catch (e: Exception) {
-                logger.error("Error occurred with $it")
+                logger.error("Error occurred with $it, ${e.message}")
             }
         }
     }
