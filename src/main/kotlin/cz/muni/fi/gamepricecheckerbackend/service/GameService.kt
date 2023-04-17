@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.awt.print.Pageable
 import java.util.Date
 
 
@@ -32,7 +33,7 @@ class GameService(
     private val priceSnapshotRepository: PriceSnapshotRepository
 ) {
 
-    fun getGames(page: Int, pageSize: Int, sortBy: SortBy, order: Order): List<GameDTO> {
+    fun getGames(page: Int, pageSize: Int, sortBy: SortBy, order: Order, filter: String): List<GameDTO> {
         val sort = when (order) {
             Order.ASC -> {
                 Sort.by(sortBy.value).ascending()
@@ -42,7 +43,8 @@ class GameService(
                 Sort.by(sortBy.value).descending()
             }
         }
-        val games = gameRepository.findAll(PageRequest.of(page, pageSize, sort)).content
+        val pageRequest = PageRequest.of(page, pageSize, sort)
+        val games = gameRepository.findByName(filter, pageRequest).content
         return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
     }
 
@@ -77,8 +79,8 @@ class GameService(
             }
     }
 
-    fun getGamesCount(): Long {
-        return gameRepository.count()
+    fun getGamesCount(filter: String): Long {
+        return gameRepository.countFiltered(filter)
     }
 
     @Transactional
