@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.awt.print.Pageable
 import java.util.Date
 
 
@@ -43,8 +42,7 @@ class GameService(
                 Sort.by(sortBy.value).descending()
             }
         }
-        val pageRequest = PageRequest.of(page, pageSize, sort)
-        val games = gameRepository.findByName(filter, pageRequest).content
+        val games = gameRepository.findByName(filter, PageRequest.of(page, pageSize, sort)).content
         return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
     }
 
