@@ -2,6 +2,8 @@ package cz.muni.fi.gamepricecheckerbackend.controller
 
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
+import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import cz.muni.fi.gamepricecheckerbackend.model.wrapper.ResponseWrapper
 import cz.muni.fi.gamepricecheckerbackend.service.UserService
 import io.swagger.v3.oas.annotations.Operation
@@ -63,16 +65,31 @@ class UserController(private val userService: UserService) {
     @Operation(summary = "Get favorite games", description = "Returns page of user's favorite games")
     @GetMapping("/favorites")
     fun getUserFavorites(
-        @Parameter(description = "Page", required = false) @RequestParam page: Int?,
-        @Parameter(description = "Page size", required = true) @RequestParam pageSize: Int
+        @Parameter(description = "Page", required = false) @RequestParam page: Int = 0,
+        @Parameter(description = "Page size", required = true) @RequestParam pageSize: Int,
+        @Parameter(description = "Sort by", required = false) @RequestParam sortBy: SortBy = SortBy.NAME,
+        @Parameter(description = "Order direction", required = false) @RequestParam order: Order = Order.ASC,
+        @Parameter(description = "Name filter", required = false) @RequestParam filter: String = ""
     ): ResponseEntity<ResponseWrapper<List<GameDTO>>> {
-        return ResponseEntity.ok(ResponseWrapper("", userService.getUserFavorites(page ?: 0, pageSize)))
+        return ResponseEntity.ok(
+            ResponseWrapper(
+                "Successfully returned $page of user favorites", userService.getUserFavorites(
+                    page,
+                    pageSize,
+                    sortBy,
+                    order,
+                    filter
+                )
+            )
+        )
     }
 
     @Operation(summary = "Get favorite games count", description = "Returns the count of all user's favorite games")
     @GetMapping("/favorites/count")
-    fun getUserFavoritesCount(): ResponseEntity<ResponseWrapper<Int>> {
-        return ResponseEntity.ok(ResponseWrapper("Success", userService.getUserFavoriteCount()))
+    fun getUserFavoritesCount(
+        @Parameter(description = "Name filter", required = false) @RequestParam filter: String = ""
+    ): ResponseEntity<ResponseWrapper<Long>> {
+        return ResponseEntity.ok(ResponseWrapper("Success", userService.getUserFavoriteCount(filter)))
     }
 
     @Operation

@@ -30,4 +30,24 @@ interface GameRepository : JpaRepository<Game, String>, PagingAndSortingReposito
 
     @Query("select count(g) from Game g where lower(g.name) like lower(concat('%', :filter, '%'))")
     fun countFiltered(@Param("filter") filter: String): Long
+
+    @Query(
+        """
+            select g.*
+            from games g 
+            join game_favorites gf on g.id = gf.game_id 
+            where gf.user_id = :userId 
+            and lower(g.name) like lower(concat('%', :filter, '%'))
+        """, nativeQuery = true)
+    fun findUserGameFavorites(@Param("filter") filter: String, @Param("userId") userId: String, pageable: Pageable): Page<Game>
+
+    @Query(
+        """
+            select count(g)
+            from games g 
+            join game_favorites gf on g.id = gf.game_id 
+            where gf.user_id = :userId 
+            and lower(g.name) like lower(concat('%', :filter, '%'))
+        """, nativeQuery = true)
+    fun favoriteCountFiltered(@Param("filter") filter: String, @Param("userId") userId: String): Long
 }

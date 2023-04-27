@@ -136,6 +136,9 @@ Change list 0.4.17
 Change list 0.4.17.2
 * implemented filtering
 
+Change list 0.4.19
+* implemented filtering, sorting, ordering for user favorite games
+
 Change list 0.4.27
 * fixed deleting user
 * added http basic to security config

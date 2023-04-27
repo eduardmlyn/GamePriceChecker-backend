@@ -44,16 +44,16 @@ class GameController(
     @Operation(summary = "Get all games", description = "Returns games according to page.")
     @GetMapping("/all")
     fun getAllGames(
-        @Parameter(description = "Page", required = false) @RequestParam page: Int?,
+        @Parameter(description = "Page", required = false) @RequestParam page: Int = 0,
         @Parameter(description = "Page size", required = true) @RequestParam pageSize: Int,
-        @Parameter(description = "Sort by", required = false) @RequestParam sortBy: SortBy?,
-        @Parameter(description = "Order direction", required = false) @RequestParam order: Order?,
-        @Parameter(description = "Name filter", required = false) @RequestParam filter: String?
+        @Parameter(description = "Sort by", required = false) @RequestParam sortBy: SortBy = SortBy.NAME,
+        @Parameter(description = "Order direction", required = false) @RequestParam order: Order = Order.ASC,
+        @Parameter(description = "Name filter", required = false) @RequestParam filter: String = ""
     ): ResponseEntity<ResponseWrapper<List<GameDTO>>> {
         return ResponseEntity.ok(
             ResponseWrapper(
-                "Successfully returned page number ${page ?: 0}",
-                gameService.getGames(page ?: 0, pageSize, sortBy ?: SortBy.NAME, order ?: Order.ASC, filter ?: "")
+                "Successfully returned page number $page",
+                gameService.getGames(page, pageSize, sortBy, order, filter)
             )
         )
     }
@@ -61,9 +61,9 @@ class GameController(
     @Operation(summary = "Get page count", description = "Returns number of pages.")
     @GetMapping("/count")
     fun getGamesCount(
-        @Parameter(description = "Name filter", required = false) @RequestParam filter: String?
+        @Parameter(description = "Name filter", required = false) @RequestParam filter: String = ""
     ): ResponseEntity<ResponseWrapper<Long>> {
-        return ResponseEntity.ok(ResponseWrapper("Success", gameService.getGamesCount(filter ?: "")))
+        return ResponseEntity.ok(ResponseWrapper("Success", gameService.getGamesCount(filter)))
     }
 
     //----------------------TESTING ENDPOINTS----------------------\\

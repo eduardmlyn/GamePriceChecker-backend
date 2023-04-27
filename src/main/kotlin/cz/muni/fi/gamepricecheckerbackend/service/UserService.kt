@@ -3,9 +3,13 @@ package cz.muni.fi.gamepricecheckerbackend.service
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.User
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
+import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
 import cz.muni.fi.gamepricecheckerbackend.security.JwtService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -62,19 +66,31 @@ class UserService(
         return true
     }
 
-    fun getUserFavorites(page: Int, pageSize: Int): List<GameDTO> {
+    fun getUserFavorites(page: Int, pageSize: Int, sortBy: SortBy, order: Order, filter: String): List<GameDTO> {
         val username = jwtService.getUserName()
         val user = userRepository.findUserByUserName(username) ?: return emptyList()
-        val botIndex = pageSize * page
-        val topIndex = if (pageSize * (page + 1) < user.favorites.size) pageSize * (page + 1) else user.favorites.size
-        val games = user.favorites.subList(botIndex, topIndex)
+        val sortValue = if (sortBy == SortBy.RELEASE_DATE) {
+            "release_date"
+        } else {
+            sortBy.value
+        }
+        val sort = when (order) {
+            Order.ASC -> {
+                Sort.by(sortValue).ascending()
+            }
+
+            Order.DESC -> {
+                Sort.by(sortValue).descending()
+            }
+        }
+        val games = gameRepository.findUserGameFavorites(filter, user.id, PageRequest.of(page, pageSize, sort)).content
         return games.map { GameDTO(it.id, it.name, it.imageUrl, it.releaseDate) }
     }
 
-    fun getUserFavoriteCount(): Int {
+    fun getUserFavoriteCount(filter: String): Long {
         val username = jwtService.getUserName()
         val user = userRepository.findUserByUserName(username) ?: return 0
-        return user.favorites.size
+        return gameRepository.favoriteCountFiltered(filter, user.id)
     }
 
     fun logout(token: String) {
