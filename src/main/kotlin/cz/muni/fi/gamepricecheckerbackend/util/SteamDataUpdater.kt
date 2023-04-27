@@ -70,7 +70,7 @@ class SteamDataUpdater(
                 saveDetails(key, value, apps)
                 simulatePause()
             } catch (e: Exception) {
-                println(e)
+                logger.error(e.message)
             }
         }
     }

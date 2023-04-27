@@ -9,5 +9,4 @@ import org.springframework.data.jpa.repository.JpaRepository
  */
 interface UserRepository : JpaRepository<User, String> {
     fun findUserByUserName(username: String): User?
-    fun deleteUserByUserName(username: String): Int
 }

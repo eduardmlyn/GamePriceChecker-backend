@@ -60,7 +60,6 @@ class ScheduledGameUpdate(
             eaScrapper.scrapeGamePrices(webDriver)
             logger.info("Finished Ea data scraping")
         } catch (e: Exception) {
-            println(e)
             logger.error(e.message)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
@@ -75,7 +74,6 @@ class ScheduledGameUpdate(
             humbleBundleScrapper.scrapeGamePrices(webDriver)
             logger.info("Finished HB price scraping")
         } catch (e: Exception) {
-            println(e)
             logger.error(e.message)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
@@ -93,7 +91,6 @@ class ScheduledGameUpdate(
             humbleBundleScrapper.scrapeGameDetails(webDriver)
             logger.info("Finished HB detail scraping")
         } catch (e: Exception) {
-            println(e)
             logger.error(e.message)
         } finally {
             chromeDriverFactory.destroyChromeDriverInstance(webDriver)
@@ -107,7 +104,6 @@ class ScheduledGameUpdate(
             steamDataUpdater.updateGamePrices()
             logger.info("Finished Steam price update")
         } catch (e: Exception) {
-            println(e)
             logger.error(e.message)
         } finally {
             taskDoneEventPublisher.publishTaskDone("Updating steam game prices completed.", Seller.STEAM)
@@ -121,7 +117,6 @@ class ScheduledGameUpdate(
             steamDataUpdater.updateGameDetails()
             logger.info("Finished Steam detail update")
         } catch (e: Exception) {
-            println(e)
             logger.error(e.message)
         }
     }

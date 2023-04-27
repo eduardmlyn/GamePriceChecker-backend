@@ -48,6 +48,8 @@ class SecurityConfig(
             .anyRequest()
             .authenticated()
             .and()
+            .httpBasic()
+            .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()

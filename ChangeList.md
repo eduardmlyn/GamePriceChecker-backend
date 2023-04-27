@@ -3,7 +3,7 @@ TODOS:
 * change feignClient to requestline?
 * add try catch to scraper findelement
 * overall cleanup and fixes
-* extract release date parsing
+* implement more tests
 
 Possible extensions:
 * add email to user for notifications
@@ -135,3 +135,8 @@ Change list 0.4.17
 
 Change list 0.4.17.2
 * implemented filtering
+
+Change list 0.4.27
+* fixed deleting user
+* added http basic to security config
+* added more logging

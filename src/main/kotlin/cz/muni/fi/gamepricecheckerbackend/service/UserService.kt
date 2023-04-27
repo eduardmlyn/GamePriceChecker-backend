@@ -28,8 +28,11 @@ class UserService(
     @Transactional
     fun deleteUser(): Unit? {
         val username = jwtService.getUserName()
-        if (userRepository.deleteUserByUserName(username) > 0) return Unit
-        return null
+        val user = userRepository.findUserByUserName(username) ?: return null
+        user.favorites.clear()
+        userRepository.save(user)
+        userRepository.delete(user)
+        return Unit
     }
 
     @Transactional

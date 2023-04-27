@@ -28,7 +28,7 @@ class UserRepositoryTest(
     @BeforeEach
     fun init() {
 //        every { User("",Role.USER, "userTest", "user") } answers { User() }
-        testUser = User("testId", Role.USER, "userTest", "user", emptyList())
+        testUser = User("testId", "userTest", Role.USER)
         println(testUser)
         entityManager.persist(testUser)
         entityManager.flush()
