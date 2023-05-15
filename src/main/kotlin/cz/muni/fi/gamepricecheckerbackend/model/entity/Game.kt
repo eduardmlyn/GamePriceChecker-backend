@@ -48,4 +48,6 @@ data class Game(
         emptySet(),
         emptyList()
     )
+
+    constructor(id: String, name: String) : this(id, name, "", null, null, emptySet(), emptyList())
 }

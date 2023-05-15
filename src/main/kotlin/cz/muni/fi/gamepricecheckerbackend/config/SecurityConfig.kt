@@ -1,6 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.config
 
-import cz.muni.fi.gamepricecheckerbackend.security.JwtFilter
+import cz.muni.fi.gamepricecheckerbackend.filter.JwtFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationProvider
@@ -38,8 +38,6 @@ class SecurityConfig(
             .requestMatchers("/auth/**")
             .permitAll()
             .requestMatchers("/game")
-            .permitAll()
-            .requestMatchers("/game/init")
             .permitAll()
             .requestMatchers("/game/all")
             .permitAll()

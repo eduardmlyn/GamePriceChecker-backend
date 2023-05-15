@@ -1,6 +1,7 @@
-package cz.muni.fi.gamepricecheckerbackend.security
+package cz.muni.fi.gamepricecheckerbackend.filter
 
 import cz.muni.fi.gamepricecheckerbackend.service.BlackListService
+import cz.muni.fi.gamepricecheckerbackend.service.JwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest

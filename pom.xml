@@ -10,7 +10,7 @@
     </parent>
     <groupId>cz.muni.fi</groupId>
     <artifactId>GamePriceChecker-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>GamePriceChecker-backend</name>
     <description>GamePriceChecker-backend</description>
     <properties>

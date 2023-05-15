@@ -28,7 +28,6 @@ class EAScrapper(
 
     private val seller = Seller.EA_GAMES
 
-
     override fun scrapeGamePrices(driver: ChromeDriver) {
         setCatalogWindow(driver)
         simulateUserBehaviour()
@@ -172,7 +171,6 @@ class EAScrapper(
         driver.get(pcOptionUrl)
         simulateUserBehaviour()
         val title = driver.title
-        if (title.contains("404") || title.contains("500")) return false
-        return true
+        return !(title.contains("404") || title.contains("500"))
     }
 }

@@ -7,7 +7,6 @@ import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
 import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
-import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service

@@ -5,7 +5,6 @@ import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRes
 import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
 import cz.muni.fi.gamepricecheckerbackend.repository.UserRepository
-import cz.muni.fi.gamepricecheckerbackend.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException

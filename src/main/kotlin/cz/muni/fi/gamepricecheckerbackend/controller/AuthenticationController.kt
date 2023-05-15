@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @author Eduard Stefan Mlynarik
  */
-@Tag(name = "Auth", description = "Provides Api for getting access to the system's secured endpoints")
+@Tag(name = "Auth", description = "Provides API for getting access to the system's secured endpoints")
 @RestController
 @CrossOrigin
 @RequestMapping(value = ["/auth"])

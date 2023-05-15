@@ -1,4 +1,4 @@
-package cz.muni.fi.gamepricecheckerbackend.security
+package cz.muni.fi.gamepricecheckerbackend.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts

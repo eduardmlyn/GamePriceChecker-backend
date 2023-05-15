@@ -22,13 +22,12 @@ import org.springframework.web.bind.annotation.RestController
  *
  * @author Eduard Stefan Mlynarik
  */
-@Tag(name = "Game", description = "Provides Api for Games in the system")
+@Tag(name = "Game", description = "Provides API for Games in the system")
 @RestController
 @CrossOrigin
 @RequestMapping(value = ["/game"])
 class GameController(
     private val gameService: GameService,
-    private val scheduledGameUpdate: ScheduledGameUpdate
 ) {
 
     @Operation(summary = "Get game details", description = "Returns details of game.")
@@ -64,11 +63,5 @@ class GameController(
         @Parameter(description = "Name filter", required = false) @RequestParam filter: String = ""
     ): ResponseEntity<ResponseWrapper<Long>> {
         return ResponseEntity.ok(ResponseWrapper("Success", gameService.getGamesCount(filter)))
-    }
-
-    //----------------------TESTING ENDPOINTS----------------------\\
-    @GetMapping("/init")
-    fun init() {
-        scheduledGameUpdate.init()
     }
 }

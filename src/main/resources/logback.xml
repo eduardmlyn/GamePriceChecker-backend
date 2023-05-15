@@ -20,6 +20,7 @@
 
     <logger name="cz.muni.fi.gamepricecheckerbackend" level="DEBUG"/>
     <logger name="org.openqa.selenium" level="INFO"/>
+    <logger name="org.springframework.security" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="FILE"/>

@@ -20,38 +20,6 @@ class ScheduledGameUpdate(
     private val taskDoneEventPublisher: TaskDoneEventPublisher,
     private val logger: Logger
 ) {
-    class ThreadC(val func: () -> Unit) : Runnable {
-        override fun run() {
-            func()
-        }
-    }
-
-    //    uncomment for testing methods
-//    @PostConstruct
-    fun init() {
-//        val steamDataRunnable = ThreadC { updateSteamData() }
-        val steamPricesRunnable = ThreadC { updateSteamPrices() }
-        val eaGameRunnable = ThreadC { updateEaGameData() }
-        val humbleBundlePricesRunnable = ThreadC { updateHumbleBundleGamePrices() }
-//        val humbleBundleDataRunnable = ThreadC { updateHumbleBundleGameData() }
-        // ------------------------------------ \\
-//        val steamDataThread = Thread(steamDataRunnable)
-        val steamPricesThread = Thread(steamPricesRunnable)
-        val eaGameThread = Thread(eaGameRunnable)
-        val humbleBundlePricesThread = Thread(humbleBundlePricesRunnable)
-//        val humbleBundleDataThread = Thread(humbleBundleDataRunnable)
-        // ------------------------------------ \\
-//        steamDataThread.start()
-//        logger.info("Starting thread Steam Data, running update script")
-        steamPricesThread.start()
-        logger.info("Starting thread Steam Prices, running update script")
-        eaGameThread.start()
-        logger.info("Starting thread EA, running update script")
-        humbleBundlePricesThread.start()
-        logger.info("Starting thread Humble Bundle Price, running update script")
-//        humbleBundleDataThread.start()
-//        logger.info("Starting thread Humble Bundle Data, running update script")
-    }
 
     @Scheduled(cron = "@daily")
     fun updateEaGameData() {
@@ -84,7 +52,7 @@ class ScheduledGameUpdate(
         }
     }
 
-    @Scheduled(cron = "@weekly")
+    @Scheduled(cron = "@monthly")
     fun updateHumbleBundleGameData() {
         val webDriver = chromeDriverFactory.getChromeDriverInstance()
         try {
@@ -110,8 +78,7 @@ class ScheduledGameUpdate(
         }
     }
 
-    // might be needed to make this monthly, depends on the time of the execution
-    @Scheduled(cron = "@weekly")
+    @Scheduled(cron = "@monthly")
     fun updateSteamData() {
         try {
             steamDataUpdater.updateGameDetails()

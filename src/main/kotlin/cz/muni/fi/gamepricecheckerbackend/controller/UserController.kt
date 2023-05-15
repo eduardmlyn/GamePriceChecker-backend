@@ -92,7 +92,7 @@ class UserController(private val userService: UserService) {
         return ResponseEntity.ok(ResponseWrapper("Success", userService.getUserFavoriteCount(filter)))
     }
 
-    @Operation
+    @Operation(summary = "Log out user")
     @PostMapping("/logout")
     fun invalidateSession(
         @Parameter(

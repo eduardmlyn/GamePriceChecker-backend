@@ -4,9 +4,11 @@ import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
 import cz.muni.fi.gamepricecheckerbackend.model.entity.User
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -16,39 +18,37 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
  *
  * @author Eduard Stefan Mlynarik
  */
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@AutoConfigureTestEntityManager
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestEntityManager
 @DataJpaTest
-class UserRepositoryTest(
-) {
-    private val entityManager: TestEntityManager = mockk()
-    private val userRepository: UserRepository = mockk()
-    private var testUser = User()
+class UserRepositoryTest() {
+    @Autowired
+    lateinit var entityManager: TestEntityManager
+    @Autowired
+    lateinit var userRepository: UserRepository
 
-    @BeforeEach
-    fun init() {
-//        every { User("",Role.USER, "userTest", "user") } answers { User() }
-        testUser = User("testId", "userTest", Role.USER)
-        println(testUser)
-        entityManager.persist(testUser)
-        entityManager.flush()
-    }
+    // TODO change this
+//    @BeforeEach
+//    fun init() {
+//        testUser = User("userTest", "userTest", Role.USER)
+//        println(testUser)
+//        every { entityManager.persist(any<User>()) } returns User("userTest", "userTest", Role.USER)
+//        entityManager.persist(testUser)
+//        every { entityManager.flush() } returns Unit
+//        entityManager.flush()
+//    }
 
     @Test
     fun `When findUserByUserName then return User`() {
-        every { userRepository.findUserByUserName("userTest") } returns User()
-        assertEquals(userRepository.findUserByUserName("userTest"), testUser)
+        val username = "userTest"
+        val expectedUser = User(username, "password", Role.USER)
+        every { userRepository.findUserByUserName(username) } returns expectedUser
+
+        // When
+        val result = userRepository.findUserByUserName(username)
+
+        // Then
+        verify(exactly = 1) { userRepository.findUserByUserName(username) }
+        assertEquals(expectedUser, result)
     }
-
-//    @Test
-//    fun `When existsUserByUserName then return true`() {
-//        every { userRepository.existsUserByUserName("userTest") } answers { true }
-//        assert(userRepository.existsUserByUserName("userTest"))
-//    }
-
-//    @Test
-//    fun `When existsUserByUserName return false`() {
-//        val exists = userRepository.existsUserByUserName("noValidUser")
-//        assert(exists)
-//    }
 }

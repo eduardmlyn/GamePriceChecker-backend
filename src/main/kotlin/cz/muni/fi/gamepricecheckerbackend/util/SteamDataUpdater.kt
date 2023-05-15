@@ -1,6 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.util
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import cz.muni.fi.gamepricecheckerbackend.client.SteamGameDetailClient
 import cz.muni.fi.gamepricecheckerbackend.client.SteamGameListClient
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
@@ -12,7 +12,7 @@ import cz.muni.fi.gamepricecheckerbackend.service.GameService
 import org.slf4j.Logger
 import org.springframework.stereotype.Component
 import java.time.Duration
-import java.util.*
+import java.util.Date
 import kotlin.math.min
 
 /**
@@ -25,14 +25,14 @@ class SteamDataUpdater(
     private val steamGameDetailClient: SteamGameDetailClient,
     private val gameService: GameService,
     private val dateParser: DateParser,
-    private val logger: Logger
+    private val logger: Logger,
+    private val objectMapper: ObjectMapper
 ) {
 
     private val seller = Seller.STEAM
     private val filter = "price_overview"
     private val countryCode = "CZ"
     private val steamLinkBase = "https://store.steampowered.com/search/?term="
-    private val objectMapper = jacksonObjectMapper()
 
     fun updateGamePrices() {
         val apps = steamGameListClient.getAllGames().appList.apps
