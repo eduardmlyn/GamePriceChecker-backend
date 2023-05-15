@@ -122,7 +122,6 @@ class EAScrapper(
         return gameDescription[0].text
     }
 
-    // TODO refactor
     private fun getGamePrice(driver: ChromeDriver): Double? {
         val gamePrice =
             driver.findElements(By.cssSelector("ea-hybrid-price-query[query-type='gamePrice'] ea-hybrid-price-badge"))
@@ -138,13 +137,13 @@ class EAScrapper(
         if (oldGamePrice.isEmpty()) return null
         var priceString = oldGamePrice[0].text
         if (priceString == null || priceString == "") return null
-        for (i in 1..3) { // TODO might need to click buttons to get the data of price -> for now ignore
-            if (priceString == "--") { // TODO extract to another method
+        for (i in 1..3) {
+            if (priceString == "--") {
                 simulateUserBehaviour()
                 val oldGamePriceRefreshed =
                     priceDisplayShadowRoot.findElement(By.cssSelector("div[class='price-text']"))
                 priceString = oldGamePriceRefreshed.text
-            } // Somehow indicate that the price couldn't be fetched
+            }
         }
         // replacing ',' with '.' to properly get the game price
         priceString = priceString.replace(',', '.')

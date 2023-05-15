@@ -143,3 +143,18 @@ Change list 0.4.27
 * fixed deleting user
 * added http basic to security config
 * added more logging
+
+Change list 0.5.15 and 0.5.15b
+* removed the test controller method
+* description fixes
+* moved JwtFilter to filter folder
+* moved JwtService to service folder
+* changed update of game details to monthly
+* moved objectMapper to constructor in SteamDataUpdater
+* moved spring security logging config to logback.xml from application.properties 
+* implemented tests
+* configured test environment
+* removed docker-compose.yml
+* added Dockerfile
+* changed app version to 1.0
+* removed unused imports, fixed formatting

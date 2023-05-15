@@ -34,7 +34,7 @@ data class GameSeller(
     @JoinColumn(name = "game_id")
     val game: Game
 ) {
-    constructor(): this("", null, 0.0, EA_GAMES, Game())
+    constructor() : this("", null, 0.0, EA_GAMES, Game())
     constructor(seller: Seller, game: Game) : this("", null, 0.0, seller, game)
     constructor(link: String?, price: Double, seller: Seller, game: Game) : this("", link, price, seller, game)
 }

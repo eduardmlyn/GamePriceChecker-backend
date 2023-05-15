@@ -31,5 +31,11 @@ data class PriceSnapshot(
     @Column
     val date: Instant
 ) {
-    constructor(game: Game, averagePrice: Double, minimumPrice: Double, date: Instant) : this("", game, averagePrice, minimumPrice, date)
+    constructor(game: Game, averagePrice: Double, minimumPrice: Double, date: Instant) : this(
+        "",
+        game,
+        averagePrice,
+        minimumPrice,
+        date
+    )
 }

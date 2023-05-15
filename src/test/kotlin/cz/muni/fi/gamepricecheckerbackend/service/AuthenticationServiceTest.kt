@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
+import cz.muni.fi.gamepricecheckerbackend.BaseIntegrationTest
 import cz.muni.fi.gamepricecheckerbackend.GamePriceCheckerBackendApplication
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationRequest
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
@@ -23,8 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
  *
  * @author Eduard Stefan Mlynarik
  */
-@SpringBootTest(classes = [GamePriceCheckerBackendApplication::class])
-internal class AuthenticationServiceTest {
+internal class AuthenticationServiceTest: BaseIntegrationTest() {
     private val userRepository: UserRepository = mockk()
     private val passwordEncoder: PasswordEncoder = mockk()
     private val jwtService: JwtService = mockk()

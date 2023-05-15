@@ -13,7 +13,7 @@ import kotlin.random.Random
  *
  * @author Eduard Stefan Mlynarik
  */
-abstract class AbstractScrapper: Scrapper {
+abstract class AbstractScrapper : Scrapper {
     protected fun waitForElements(driver: ChromeDriver, locator: By) {
         WebDriverWait(
             driver,

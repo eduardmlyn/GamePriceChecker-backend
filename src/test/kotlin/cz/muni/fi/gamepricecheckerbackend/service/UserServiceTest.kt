@@ -1,5 +1,6 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
+import cz.muni.fi.gamepricecheckerbackend.BaseIntegrationTest
 import cz.muni.fi.gamepricecheckerbackend.GamePriceCheckerBackendApplication
 import cz.muni.fi.gamepricecheckerbackend.model.authentication.AuthenticationResponse
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
@@ -25,8 +26,7 @@ import org.springframework.data.domain.PageImpl
  *
  * @author Eduard Stefan Mlynarik
  */
-@SpringBootTest(classes = [GamePriceCheckerBackendApplication::class])
-internal class UserServiceTest {
+internal class UserServiceTest: BaseIntegrationTest() {
     private val userRepository: UserRepository = mockk()
     private val gameRepository: GameRepository = mockk()
     private val jwtService: JwtService = mockk()

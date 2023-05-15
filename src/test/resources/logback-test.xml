@@ -5,6 +5,10 @@
 
     <logger name="cz.muni.fi.gamepricecheckerbackend" level="DEBUG"/>
     <logger name="org.openqa.selenium" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.transaction" level="DEBUG"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type" level="TRACE"/>
 
     <root level="INFO"/>
 

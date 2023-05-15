@@ -4,9 +4,7 @@ import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.model.event.TaskDoneEvent
 import org.slf4j.Logger
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import java.time.Instant
 
 /**
  *

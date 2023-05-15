@@ -28,7 +28,6 @@ import org.springframework.data.domain.Sort
  *
  * @author Eduard Stefan Mlynarik
  */
-@SpringBootTest(classes = [GamePriceCheckerBackendApplication::class])
 internal class GameServiceTest : BaseIntegrationTest() {
     private val gameRepository: GameRepository = mockk()
     private val gameSellerRepository: GameSellerRepository = mockk()
