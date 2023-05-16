@@ -158,3 +158,9 @@ Change list 0.5.15 and 0.5.15b
 * added Dockerfile
 * changed app version to 1.0
 * removed unused imports, fixed formatting
+
+Change list 0.5.16 and 0.5.16b
+* implemented repository tests
+* implemented service tests
+* filled README.md
+* added logging when saving price snapshots

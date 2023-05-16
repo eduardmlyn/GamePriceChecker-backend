@@ -1,10 +1,8 @@
 package cz.muni.fi.gamepricecheckerbackend.service
 
 import cz.muni.fi.gamepricecheckerbackend.BaseIntegrationTest
-import cz.muni.fi.gamepricecheckerbackend.GamePriceCheckerBackendApplication
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDTO
 import cz.muni.fi.gamepricecheckerbackend.model.dto.GameDetailDTO
-import cz.muni.fi.gamepricecheckerbackend.model.dto.GameSellerDTO
 import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
 import cz.muni.fi.gamepricecheckerbackend.model.entity.GameSeller
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Order
@@ -13,16 +11,14 @@ import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import cz.muni.fi.gamepricecheckerbackend.repository.GameRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.GameSellerRepository
 import cz.muni.fi.gamepricecheckerbackend.repository.PriceSnapshotRepository
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verifySequence
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
-
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 
 /**
  *
@@ -93,6 +89,79 @@ internal class GameServiceTest : BaseIntegrationTest() {
 
     @Test
     fun `saveGame valid params existent game`() {
-        
+        val seller = GameSeller(Seller.STEAM, game)
+        val sellerList = listOf(seller)
+        every { gameRepository.findGameByName("") } returns game
+        every { game.id } returns "id"
+        every { game.imageUrl } returns null
+        every { game.description } returns null
+        every { game.releaseDate } returns null
+        every { gameRepository.save(any()) } returns game
+        every { gameSellerRepository.findGameSellersByGameId("id") } returns sellerList
+
+        every { gameSellerRepository.save(any()) } returns seller
+
+        gameService.saveGame("", 0.0, null, null, null, null, Seller.STEAM)
+
+        verifySequence {
+            gameRepository.findGameByName("")
+            game.imageUrl
+            game.description
+            game.releaseDate
+            gameRepository.save(any())
+            game.id
+            gameSellerRepository.findGameSellersByGameId("id")
+            gameSellerRepository.save(any())
+        }
+    }
+
+    @Test
+    fun `saveGamePrice valid params non-existent game`() {
+        val seller = mockk<GameSeller>()
+        every { gameRepository.findGameByName("") } returns null
+        every { gameRepository.save(any()) } returns game
+        every { game.id } returns "id"
+        every { gameSellerRepository.findGameSellerByGameIdAndSeller("id", Seller.STEAM) } returns seller
+        every { seller.price } returns 0.0
+        every { seller.price = 1.0 } just Runs
+        every { seller.link } returns "link"
+        every { seller.link = null } just Runs
+        every { gameSellerRepository.save(any()) } returns seller
+
+        gameService.saveGamePrice("", 1.0, null, Seller.STEAM)
+
+        verifySequence {
+            gameRepository.findGameByName("")
+            gameRepository.save(any())
+            game.id
+            gameSellerRepository.findGameSellerByGameIdAndSeller("id", Seller.STEAM)
+            seller.price = 1.0
+            seller.link = null
+            gameSellerRepository.save(any())
+        }
+    }
+
+    @Test
+    fun `saveGamePrice valid params existent game`() {
+        val seller = mockk<GameSeller>()
+        every { gameRepository.findGameByName("") } returns game
+        every { game.id } returns "id"
+        every { gameSellerRepository.findGameSellerByGameIdAndSeller("id", Seller.STEAM) } returns seller
+        every { seller.price } returns 0.0
+        every { seller.price = 1.0 } just Runs
+        every { seller.link } returns "link"
+        every { seller.link = null } just Runs
+        every { gameSellerRepository.save(any()) } returns seller
+
+        gameService.saveGamePrice("", 1.0, null, Seller.STEAM)
+
+        verifySequence {
+            gameRepository.findGameByName("")
+            game.id
+            gameSellerRepository.findGameSellerByGameIdAndSeller("id", Seller.STEAM)
+            seller.price = 1.0
+            seller.link = null
+            gameSellerRepository.save(any())
+        }
     }
 }

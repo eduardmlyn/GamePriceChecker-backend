@@ -48,7 +48,7 @@ interface GameRepository : JpaRepository<Game, String>, PagingAndSortingReposito
 
     @Query(
         """
-            select count(g)
+            select count(g.id)
             from games g 
             join game_favorites gf on g.id = gf.game_id 
             where gf.user_id = :userId 

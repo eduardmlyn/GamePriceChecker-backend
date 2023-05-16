@@ -41,6 +41,7 @@ class TaskDoneEventListener(val gameService: GameService, val logger: Logger) {
             val game = gameSellers[0].game
             val prices = gameSellers.map { it.price }
             val snapshot = PriceSnapshot(game, prices.average(), prices.min(), Instant.now())
+            logger.info("Saving price snapshot($snapshot) for game: $game")
             gameService.saveSnapshot(snapshot)
         }
     }

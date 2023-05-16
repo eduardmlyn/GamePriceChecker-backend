@@ -2,6 +2,8 @@ package cz.muni.fi.gamepricecheckerbackend.repository
 
 import cz.muni.fi.gamepricecheckerbackend.model.entity.Game
 import cz.muni.fi.gamepricecheckerbackend.model.entity.GameSeller
+import cz.muni.fi.gamepricecheckerbackend.model.entity.User
+import cz.muni.fi.gamepricecheckerbackend.model.enums.Role
 import cz.muni.fi.gamepricecheckerbackend.model.enums.Seller
 import cz.muni.fi.gamepricecheckerbackend.model.enums.SortBy
 import org.junit.jupiter.api.Assertions
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.test.context.TestPropertySource
+
 /**
  *
  * @author Eduard Stefan Mlynarik
@@ -23,8 +26,10 @@ import org.springframework.test.context.TestPropertySource
 class GameRepositoryTest {
     @Autowired
     private lateinit var gameRepository: GameRepository
+
     @Autowired
     private lateinit var gameSellerRepository: GameSellerRepository
+
     @Autowired
     private lateinit var userRepository: UserRepository
     private lateinit var game1: Game
@@ -32,6 +37,7 @@ class GameRepositoryTest {
     private lateinit var gameSeller1: GameSeller
     private lateinit var gameSeller2: GameSeller
     private lateinit var gameSeller3: GameSeller
+    private lateinit var user: User
     private val pageAbleSize1Ascending = PageRequest.of(0, 1, Sort.by(SortBy.NAME.value).ascending())
     private val pageAbleSize1Descending = PageRequest.of(0, 1, Sort.by(SortBy.NAME.value).descending())
     private val pageAbleSize5Ascending = PageRequest.of(0, 5, Sort.by(SortBy.NAME.value).ascending())
@@ -47,6 +53,10 @@ class GameRepositoryTest {
         gameSeller2 = gameSellerRepository.save(GameSeller(Seller.STEAM, game2))
         gameSeller3 = gameSellerRepository.save(GameSeller(Seller.HUMBLE_BUNDLE, game2))
         gameSellerRepository.flush()
+
+        user = userRepository.save(User("Test User", "Test User", Role.USER))
+        user.favorites.addAll(listOf(game1, game2))
+        userRepository.flush()
     }
 
     @Test
@@ -126,11 +136,11 @@ class GameRepositoryTest {
 
     @Test
     fun findAllGameIds() {
-        val result = gameRepository.findAllGameIds()
+        val result = gameRepository.findAllGameIds().sorted()
 
-        val expected = listOf(game1.id, game2.id)
+        val expected = listOf(game1.id, game2.id).sorted()
 
-        Assertions.assertSame(expected, result)
+        Assertions.assertEquals(expected, result)
     }
 
     @Test
@@ -156,5 +166,94 @@ class GameRepositoryTest {
         val result = gameRepository.findGamesBySeller(Seller.EA_GAMES)
 
         Assertions.assertEquals(emptyList<Pair<Game, GameSeller>>(), result)
+    }
+
+    @Test
+    fun `countFiltered without filter`() {
+        val result = gameRepository.countFiltered("")
+
+        Assertions.assertEquals(2L, result)
+    }
+
+    @Test
+    fun `countFiltered with filter`() {
+        val result = gameRepository.countFiltered("1")
+
+        Assertions.assertEquals(1L, result)
+    }
+
+    @Test
+    fun `findUserGameFavorites empty filter valid userId page size 1 sort ascending`() {
+        val result = gameRepository.findUserGameFavorites("", user.id, pageAbleSize1Ascending)
+
+        val expected: Page<Game> = PageImpl(mutableListOf(game1))
+
+        Assertions.assertEquals(expected.content, result.content)
+    }
+
+    @Test
+    fun `findUserGameFavorites empty filter valid userId page size 1 sort descending`() {
+        val result = gameRepository.findUserGameFavorites("", user.id, pageAbleSize1Descending)
+
+        val expected: Page<Game> = PageImpl(mutableListOf(game2))
+
+        Assertions.assertEquals(expected.content, result.content)
+    }
+
+    @Test
+    fun `findUserGameFavorites empty filter valid userId page size 5 sort ascending`() {
+        val result = gameRepository.findUserGameFavorites("", user.id, pageAbleSize5Ascending)
+
+        val expected: Page<Game> = PageImpl(mutableListOf(game1, game2))
+
+        Assertions.assertEquals(expected.content, result.content)
+    }
+
+    @Test
+    fun `findUserGameFavorites empty filter valid userId page size 5 sort descending`() {
+        val result = gameRepository.findUserGameFavorites("", user.id, pageAbleSize5Descending)
+
+        val expected: Page<Game> = PageImpl(mutableListOf(game2, game1))
+
+        Assertions.assertEquals(expected.content, result.content)
+    }
+
+    @Test
+    fun `findUserGameFavorites simple filter valid userId`() {
+        val result = gameRepository.findUserGameFavorites("1", user.id, pageAbleSize5Ascending)
+
+        val expected: Page<Game> = PageImpl(mutableListOf(game1))
+
+        Assertions.assertEquals(expected.content, result.content)
+    }
+
+    @Test
+    fun `findUserGameFavorites empty filter invalid userId`() {
+        val result = gameRepository.findUserGameFavorites("", "invalid id", pageAbleSize5Ascending)
+
+        val expected: Page<Game> = PageImpl(mutableListOf())
+
+        Assertions.assertEquals(expected.content, result.content)
+    }
+
+    @Test
+    fun `favoriteCountFiltered empty filter valid userId`() {
+        val result = gameRepository.favoriteCountFiltered("", user.id)
+
+        Assertions.assertEquals(2L, result)
+    }
+
+    @Test
+    fun `favoriteCountFiltered simple filter valid userId`() {
+        val result = gameRepository.favoriteCountFiltered("1", user.id)
+
+        Assertions.assertEquals(1L, result)
+    }
+
+    @Test
+    fun `favoriteCountFiltered empty filter invalid userId`() {
+        val result = gameRepository.favoriteCountFiltered("", "invalid id")
+
+        Assertions.assertEquals(0L, result)
     }
 }
