@@ -16,4 +16,4 @@ The application also includes a Dockerfile.
 To create an image of the application and run the image in a container, do the following:
 * build the application as described above
 * run docker engine
-* run `docker build`
+* run `docker build .`
